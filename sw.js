@@ -1,0 +1,1 @@
+/* Service worker non utilisé pendant le prototype. */
