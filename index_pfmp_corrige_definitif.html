@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#16324F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PFMP Stage">
+<link rel="manifest" href="manifest.webmanifest">
+<title>PFMP Stage — Test</title>
+<style>
+:root{--blue:#16324F;--bg:#f4f6f8;--card:#fff;--muted:#65717d;--border:#dfe4e8}
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:#17212b}
+header{background:var(--blue);color:#fff;padding:22px 18px 18px;position:sticky;top:0;z-index:10}
+header h1{margin:0 0 5px;font-size:23px}header p{margin:0;opacity:.82;font-size:14px}
+main{max-width:850px;margin:auto;padding:14px 14px 90px}
+.toolbar{display:grid;gap:9px;margin-bottom:12px}
+input,select,button{font:inherit}
+input,select{width:100%;padding:12px;border:1px solid var(--border);border-radius:11px;background:#fff}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.row{display:flex;justify-content:space-between;align-items:center;margin:12px 2px}
+.count{font-size:13px;color:var(--muted)}.favOnly{border:1px solid var(--border);background:#fff;border-radius:10px;padding:9px 11px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:15px;margin:10px 0;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.card h2{font-size:17px;margin:0 36px 5px 0}.activity{font-size:14px;color:var(--blue);font-weight:600}.meta{font-size:13px;color:var(--muted);margin-top:5px}
+.cardtop{position:relative}.star{position:absolute;right:0;top:-4px;border:0;background:none;font-size:28px;cursor:pointer}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}.actions a,.actions button{border:1px solid var(--border);border-radius:9px;padding:9px 11px;background:#fff;text-decoration:none;color:var(--blue);font-weight:600}
+.detail{display:none}.detail.active{display:block}.list.hidden{display:none}
+.back{border:0;background:none;padding:4px 0;color:var(--blue);font-weight:700;font-size:15px}
+.detail h2{font-size:22px;margin:8px 0}.label{font-size:12px;color:var(--muted);margin-top:15px}.value{font-size:15px;margin-top:3px}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;justify-content:center;gap:40px;padding:10px 10px calc(10px + env(safe-area-inset-bottom));z-index:20}
+nav button{border:0;background:none;color:var(--blue);font-weight:700}.empty{text-align:center;color:var(--muted);padding:35px 10px}
+@media(min-width:700px){.toolbar{grid-template-columns:2fr 1fr 1fr}.filters{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header><h1>PFMP Stage</h1><p>Prototype — recherche d'entreprises</p></header>
+<main>
+<section id="listView" class="list">
+  <div class="toolbar">
+    <input id="q" placeholder="🔎 Rechercher une entreprise ou une activité">
+    <select id="city"><option value="">Toutes les villes</option></select>
+    <select id="activity"><option value="">Tous les secteurs</option></select>
+  </div>
+  <div class="filters">
+    <select id="sort"><option value="name" selected>Trier : nom</option><option value="city">Trier : ville</option><option value="activity">Trier : secteur</option></select>
+    <button class="favOnly" id="favOnly">☆ Mes favoris uniquement</button>
+  </div>
+  <div class="row"><span class="count" id="count"></span><button class="favOnly" id="reset">Réinitialiser</button></div>
+  <div id="cards"></div>
+</section>
+
+<section id="detailView" class="detail">
+  <button class="back" id="back">← Retour à la liste</button>
+  <div id="detail"></div>
+</section>
+</main>
+<nav><button id="homeBtn">🏠 Entreprises</button><button id="favoritesBtn">⭐ Favoris</button></nav>
+<script>
+const companies = [{"id":1,"name":"Agence CENTURY 21 Riquelme Immobilier","activity":"Agence Immobilière","address":"1029 Boulevard Blaise Doumerc 82000 Montauban","city":"MONTAUBAN","postal":"82000","responsible":"Nicolas RIQUELME","phone":"05 63 91 63 33","mobile":"","email":"","website":"https://www.century21riquelmeimmobilier.com/","logo":"https://www.century21-aravis-grand-bornand.com/imagesBien/202/225/v5/1539619140.jpg","lat":44.0210145,"lon":1.3617315},{"id":2,"name":"Agence Nestenn Immobilier Montauban Lacapelle","activity":"Agence Immobilière","address":"119 Fbg Lacapelle 82000 Montauban","city":"MONTAUBAN","postal":"82000","responsible":"","phone":"05 63 20 36 02","mobile":"","email":"","website":"https://immobilier-montauban-lacapelle.nestenn.com/","logo":"https://lh6.googleusercontent.com/-uCEdQD_k78c/AAAAAAAAAAI/AAAAAAAAAAA/iIfQzNv2zwU/s44-p-k-no-ns-nd/photo.jpg","lat":44.01519210000001,"lon":1.3573252},{"id":3,"name":"Agence Immobilière Montauban : ARTHURIMMO Grand Montauban","activity":"Agence Immobilière","address":"12 Place Franklin Roosevelt 82000 Montauban","city":"MONTAUBAN","postal":"82000","responsible":"","phone":"05 82 17 01 20","mobile":"","email":"","website":"https://www.arthurimmo.com/immobilier/tout/immo-montauban-82","logo":"https://lh3.googleusercontent.com/-1iTqiaNbdGU/AAAAAAAAAAI/AAAAAAAAAAA/CyhMrN3cdlQ/s44-p-k-no-ns-nd/photo.jpg","lat":44.0156684,"lon":1.3538847},{"id":4,"name":"Human Immobilier Montauban","activity":"Agence Immobilière","address":"14 Place Franklin Roosevelt 82000 Montauban","city":"MONTAUBAN","postal":"82000","responsible":"","phone":"05 63 66 07 72","mobile":"","email":"","website":"https://www.human-immobilier.fr/montauban-centre?utm_source=google&utm_medium=seo&utm_campaign=google_my_business_achat","logo":"https://www.pagesjaunes.fr/media/agc/crop/100x100/07/8c/b2/00/00/96/37/97/c1/9d/62b3078cb20000963797c19d/62b3078cb20000963797c19e.png?v=2","lat":44.0159639,"lon":1.3541017},{"id":5,"name":"PEUGEOT MONTAUBAN - MACARD","activity":"Concession automobile","address":"1825 Route du N 82000 Montauban","city":"MONTAUBAN","postal":"82000","responsible":"","phone":"05 63 04 58 99","mobile":"","email":"","website":"https://www.peugeot.fr/","logo":"https://media-exp2.licdn.com/dms/image/C4E0BAQFJ3OFkE2pOtA/company-logo_200_200/0/1614269459497?e=2147483647&v=beta&t=ZrSOPOndYb5nS_FhJTV3y0uERF391M6ORTJHJxxb08U","lat":44.0483838,"lon":1.3936421},{"id":6,"name":"RENAULT - DACIA (Faurie automobile)","activity":"Concession automobile","address":"2 Route de Toulouse 82100 Castelsarrasin","city":"CASTELSARRASIN","postal":"82100","responsible":"","phone":"05 63 32 71 00","mobile":"","email":"e.eliseon@faurie.fr","website":"https://www.renault.fr/","logo":"https://api.club.ffr.fr/cabrive-association/wp-content/uploads/sites/37/2020/03/Faurie.png","lat":44.0356944,"lon":1.1145432},{"id":7,"name":"AIXAM DE RAED & Fils","activity":"Concession automobile","address":"22 Bd Marceau Fauré 82100 Castelsarrasin","city":"CASTELSARRASIN","postal":"82100","responsible":"","phone":"05 63 95 08 90","mobile":"","email":"","website":"","logo":"https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Aixam_logo_detail.svg/1200px-Aixam_logo_detail.svg.png","lat":44.035855,"lon":1.1094862},{"id":8,"name":"ISUZU GUY DE RAED (CUO DE RAED et Fils)","activity":"Concession automobile","address":"22 Boulevard Marceau Faure 82100 Castelsarrasin","city":"CASTELSARRASIN","postal":"82100","responsible":"M. DE RAED Benjamin","phone":"05 63 95 08 90","mobile":"07 88 37 21 17","email":"benjamin.deraed@monpickup-deraed.fr","website":"www-garage-voiture-castelsarrasin.fr","logo":"https://logos-marques.com/wp-content/uploads/2021/02/Isuzu-Logo.jpg","lat":44.035855,"lon":1.1094862},{"id":9,"name":"PEUGEOT MACARD CASTEL-MOISSAC","activity":"Concession automobile","address":"22 Chem. de Caussade-Bas 82100 Castelsarrasin","city":"CASTELSARRASIN","postal":"82100","responsible":"","phone":"05 63 95 16 16","mobile":"","email":"","website":"https://www.peugeot.fr/","logo":"https://media-exp2.licdn.com/dms/image/C4E0BAQFJ3OFkE2pOtA/company-logo_200_200/0/1614269459497?e=2147483647&v=beta&t=ZrSOPOndYb5nS_FhJTV3y0uERF391M6ORTJHJxxb08U","lat":44.0752898,"lon":1.0935701},{"id":10,"name":"Hyundai Montauban - Pierre Guirado Automobiles","activity":"Concession automobile","address":"300 Route du N 82005 Montauban","city":"MONTAUBAN","postal":"82000","responsible":"","phone":"05 63 03 42 06","mobile":"","email":"","website":"https://www.hyundai.com/fr.html","logo":"https://www.1min30.com/wp-content/uploads/2019/02/Hyundai-Logo-1.jpg","lat":44.0375448,"lon":1.3816704},{"id":11,"name":"Agence Renault - Relais du Chasselas","activity":"Concession automobile","address":"43 Av. du Chasselas 82200 Moissac","city":"MOISSAC","postal":"82200","responsible":"","phone":"05 63 04 07 89","mobile":"","email":"","website":"https://www.renault.fr/","logo":"https://api.club.ffr.fr/cabrive-association/wp-content/uploads/sites/37/2020/03/Faurie.png","lat":44.1099433,"lon":1.102576},{"id":12,"name":"Garage Citroën","activity":"Concession automobile","address":"46 Av. du Maréchal Leclerc 82100 Castelsarrasin","city":"CASTELSARRASIN","postal":"82100","responsible":"M.VACQUIE Philippe","phone":"05 63 32 34 18","mobile":"","email":"","website":"https://www.citroen.fr","logo":"https://images.caradisiac.com/images/0/5/6/7/110567/S0-un-nouveau-logo-pour-citroen-388873.jpg","lat":44.047958,"lon":1.1030939},{"id":13,"name":"PEUGEOT RAPIDE MOISSAC - MACARD","activity":"Concession automobile","address":"Rue Benjamin Franklin 82200 Moissac","city":"MOISSAC","postal":"82200","responsible":"","phone":"05 63 04 17 81","mobile":"","email":"","website":"https://www.peugeot.fr/","logo":"https://media-exp2.licdn.com/dms/image/C4E0BAQFJ3OFkE2pOtA/company-logo_200_200/0/1614269459497?e=2147483647&v=beta&t=ZrSOPOndYb5nS_FhJTV3y0uERF391M6ORTJHJxxb08U","lat":44.115326,"lon":1.111787},{"id":14,"name":"Volkswagen Montauban- Autopole Maurel","activity":"Concession automobile","address":"Z.A Albasud Imp. de Monaco 82000 Montauban","city":"MONTAUBAN","postal":"82000","responsible":"","phone":"05 63 23 02 05","mobile":"","email":"","website":"https://www.volkswagen.fr/","logo":"https://drive.google.com/file/d/1bEeT4uTnNLD1TtMkyRrSTpPoJOiRsBYs/view?usp=sharing","lat":43.989721,"lon":1.332692},{"id":15,"name":"Carrefour Contact","activity":"Grande surface alimentaire (supermarché)","address":"Chemin de Castelmayran 82210 Saint-Nicolas de la grave","city":"SAINT NICOLAS DE LA GRAVE","postal":"82210","responsible":"","phone":"05 63 95 92 23","mobile":"","email":"","website":"https://www.carrefour.fr/","logo":"https://www.bayonneshopping.com/wp-content/uploads/2019/04/carrefour-contact-logo.jpg","lat":44.0486703,"lon":1.0216677},{"id":16,"name":"Jour 2 Marché J2M","activity":"Grande surface alimentaire (supermarché)","address":"Futuropole 161 Chem. de Baillot 82000 Montauban","city":"MONTAUBAN","postal":"82000","responsible":"","phone":"05 63 67 98 93","mobile":"","email":"","website":"https://www.j2m.fr/","logo":"https://www.aveyronline.net/wp-content/uploads/2020/12/J2M-01.jpg","lat":44.035122,"lon":1.3842495},{"id":17,"name":"Intermarché SUPER","activity":"Grande surface alimentaire (supermarché)","address":"Rue le Blanc 82500 Beaumont-de-Lomagne","city":"BEAUMONT DE LOMAGNE","postal":"82500","responsible":"","phone":"05 63 65 25 65","mobile":"","email":"","website":"https://www.intermarche.com/magasin?utm_source=gmb","logo":"https://images.ctfassets.net/26cqtpvnd0cd/5ExiN3EBclh9DSDVDlCxw8/672cc153d6e747e5413aad4fb489d87b/image_52__3_.png","lat":43.8792741,"lon":0.9842154},{"id":18,"name":"Supermarché Casino","activity":"Grande surface alimentaire (supermarché)","address":"Zone Activité Commercial de Bordevieille 82500 Beaumont-de-Lomagne","city":"BEAUMONT DE LOMAGNE","postal":"82500","responsible":"","phone":"05 63 68 43 00","mobile":"","email":"","website":"https://www.supercasino.fr/","logo":"https://drive.google.com/file/d/1bJn7b-F3c7tqbQ8s6V4sPvtzUVGpwQzM/view?usp=share_link","lat":43.888615,"lon":1.005304},{"id":19,"name":"Picard","activity":"Grande surface alimentaire (supermarché)","address":"Zone activite commercial de l'Artel 82100 Castelsarrasin","city":"CASTELSARRASIN","postal":"82100","responsible":"Mme. Tilly Dominique","phone":"05 63 39 72 35","mobile":"06 22 19 00 67","email":"domtilly@yahoo.fr","website":"https://magasins.picard.fr/182-picard-castelsarrasin?utm_source=gmb","logo":"https://upload.wikimedia.org/wikipedia/fr/e/e1/Logo_Picard_surgel%C3%A9s.png","lat":44.0652958,"lon":1.0993903},{"id":20,"name":"Intermarché SUPER Castelsarrasin et drive","activity":"Grande surface alimentaire (supermarché)","address":"Zone industrielle Barraouet 82100 Castelsarrasin","city":"CASTELSARRASIN","postal":"82100","responsible":"M. Jean-Louis Garrigues","phone":"05 63 95 05 95","mobile":"06 74 09 09 68","email":"pdv11872@mousquetaires.com","website":"https://www.intermarche.com/magasin?utm_source=gmb","logo":"https://images.ctfassets.net/26cqtpvnd0cd/5ExiN3EBclh9DSDVDlCxw8/672cc153d6e747e5413aad4fb489d87b/image_52__3_.png","lat":44.039889,"lon":1.107132},{"id":21,"name":"MR Bricolage Montauban","activity":"Grande surface de bricolage","address":"Zone Albasud Avenue du Luxembourg 82000 Montauban","city":"MONTAUBAN","postal":"82000","responsible":"","phone":"","mobile":"","email":"","website":"","logo":"https://ac-franchise.com/wp-content/uploads/2018/10/logo-mr-bricolage.jpg","lat":43.989721,"lon":1.332692},{"id":22,"name":"Weldom","activity":"Grande surface de bricolage","address":"129 Avenue du Quercy 82500 Beaumont-de-Lomagne","city":"BEAUMONT DE LOMAGNE","postal":"82500","responsible":"","phone":"","mobile":"05 49 98 20 30","email":"","website":"https://www.weldom.fr/magasin/235","logo":"https://drive.google.com/file/d/1KlxVh0Tm35B0sMVmOEQSccVpcfIAzHXb/view?usp=share_link","lat":43.8853777,"lon":0.9953626999999999},{"id":23,"name":"Cash piscine","activity":"Grande surface de bricolage","address":"40 Route de Saint-Martial 82000 Montauban","city":"MONTAUBAN","postal":"82000","responsible":"","phone":"","mobile":"","email":"","website":"","logo":"https://www.guide-piscine.fr/medias/image/NEW-LOGO-CASHPISCINES-page1-26368-1200-630.jpg","lat":44.0061261,"lon":1.384385},{"id":24,"name":"Leroymerlin","activity":"Grande surface de bricolage","address":"400 Boulevard d Occitanie 82000 Montauban","city":"MONTAUBAN","postal":"82000","responsible":"","phone":"","mobile":"","email":"","website":"","logo":"https://rootelo.elocms.com/assets/images/www.agroparc.com/logoAnnuaire/3900dcd14415be40bfe23f42fd419c74.jpg","lat":44.04419499999999,"lon":1.3848129},{"id":25,"name":"Brico dépôt","activity":"Grande surface de bricolage","address":"403 Route du Nord 82000 Montauban","city":"MONTAUBAN","postal":"82000","responsible":"","phone":"05 63 93 30 00","mobile":"","email":"","website":"http://www.bricodepot.fr/montauban","logo":"https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Bricodepot.svg/1200px-Bricodepot.svg.png","lat":44.0397752,"lon":1.3816704},{"id":26,"name":"Costes vertes","activity":"Grande surface de bricolage","address":"538 Route de la Mégère 82200 Moissac","city":"MOISSAC","postal":"82200","responsible":"","phone":"","mobile":"","email":"","website":"","logo":"https://www.verts-loisirs.fr/media/magedelight/storepickup/storeinfo/image/store/01-COSTES-2011.gif","lat":44.11742,"lon":1.1181771},{"id":27,"name":"Bricoman","activity":"Grande surface de bricolage","address":"Centre Commercial Espace 31150 Fenouillet","city":"FENOUILLET","postal":"31150","responsible":"","phone":"","mobile":"","email":"","website":"","logo":"https://img.batiweb.com/repo-images/supplier/5820995/bricoman-logo2020.jpg","lat":43.679151,"lon":1.392018},{"id":28,"name":"Rural Master","activity":"Grande surface de bricolage","address":"Rue des Pommes 82200 Moissac","city":"MONTAUBAN","postal":"82000","responsible":"","phone":"","mobile":"","email":"","website":"","logo":"https://www.ruralmaster.fr/moissac/img/moissac-logo-161234232659.jpg","lat":44.1099994,"lon":1.111054},{"id":29,"name":"Costes Verts Loisirs Beaumont de Lomagne","activity":"Grande surface de bricolage","address":"Zone d Activité Commercial DE BORDE VIEILLE 82500 Beaumont-de-Lomagne","city":"BEAUMONT DE LOMAGNE","postal":"82500","responsible":"","phone":"","mobile":"05 63 26 41 27","email":"","website":"","logo":"https://www.verts-loisirs.fr/media/magedelight/storepickup/storeinfo/image/store/01-COSTES-2011.gif","lat":43.888615,"lon":1.005304}];
+const cities = ["BEAUMONT DE LOMAGNE", "CASTELSARRASIN", "FENOUILLET", "MOISSAC", "MONTAUBAN", "SAINT NICOLAS DE LA GRAVE"];
+const activities = ["Agence Immobilière", "Concession automobile", "Grande surface alimentaire (supermarché)", "Grande surface de bricolage"];
+let favorites = [];
+try {
+  const saved = localStorage.getItem("pfmp-favorites");
+  if (saved) favorites = JSON.parse(saved);
+} catch (e) { favorites = []; }
+let favMode = false;
+
+const $ = id => document.getElementById(id);
+cities.forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent=x;$("city").appendChild(o)});
+activities.forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent=x;$("activity").appendChild(o)});
+
+function esc(s){return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function isFav(id){return favorites.includes(id)}
+function save(){
+  try { localStorage.setItem("pfmp-favorites",JSON.stringify(favorites)); } catch (e) {}
+}
+function toggleFav(id){favorites=isFav(id)?favorites.filter(x=>x!==id):[...favorites,id];save();render()}
+
+function render(){
+ let q=$("q").value.trim().toLowerCase(), city=$("city").value, act=$("activity").value;
+ let a=companies.filter(c=>(!q || [c.name,c.activity,c.address,c.city].join(" ").toLowerCase().includes(q))&&(!city||c.city===city)&&(!act||c.activity===act)&&(!favMode||isFav(c.id)));
+ a.sort((x,y)=>{let k=$("sort").value;return String(x[k]||"").localeCompare(String(y[k]||""),"fr")});
+ $("count").textContent=`${a.length} entreprise${a.length>1?"s":""}`;
+ $("cards").innerHTML=a.length?a.map(c=>`<article class="card"><div class="cardtop"><button class="star" onclick="toggleFav(${c.id})" aria-label="favori">${isFav(c.id)?"★":"☆"}</button><h2>${esc(c.name)}</h2><div class="activity">${esc(c.activity)}</div><div class="meta">📍 ${esc(c.city)} ${esc(c.postal)}</div></div><div class="actions"><button onclick="openDetail(${c.id})">Voir la fiche</button>${c.phone?`<a href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}</div></article>`).join(""):`<div class="empty">Aucune entreprise ne correspond aux critères.</div>`;
+}
+function openDetail(id){
+ let c=companies.find(x=>x.id===id); if(!c)return;
+ $("listView").classList.add("hidden");$("detailView").classList.add("active");
+ let maps=c.lat&&c.lon?`https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lon}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.address)}`;
+ $("detail").innerHTML=`<div class="card"><div class="cardtop"><button class="star" onclick="toggleFav(${c.id});openDetail(${c.id})">${isFav(c.id)?"★":"☆"}</button><h2>${esc(c.name)}</h2><div class="activity">${esc(c.activity)}</div></div>
+ <div class="label">Adresse</div><div class="value">${esc(c.address)}</div>
+ <div class="label">Responsable</div><div class="value">${esc(c.responsible)||"Non renseigné"}</div>
+ <div class="label">Téléphone</div><div class="value">${c.phone?`<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a>`:"Non renseigné"}</div>
+ <div class="label">E-mail</div><div class="value">${c.email?`<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`:"Non renseigné"}</div>
+ <div class="label">Site internet</div><div class="value">${c.website?`<a target="_blank" rel="noopener" href="${esc(c.website.match(/^https?:\/\//)?c.website:"https://"+c.website)}">Ouvrir le site</a>`:"Non renseigné"}</div>
+ <div class="actions"><a target="_blank" rel="noopener" href="${maps}">📍 Voir sur la carte</a>${c.phone?`<a href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}</div></div>`;
+ window.scrollTo(0,0);
+}
+$("back").onclick=()=>{$("detailView").classList.remove("active");$("listView").classList.remove("hidden");render()}
+$("homeBtn").onclick=()=>{$("detailView").classList.remove("active");$("listView").classList.remove("hidden");favMode=false;render()}
+$("favoritesBtn").onclick=()=>{$("detailView").classList.remove("active");$("listView").classList.remove("hidden");favMode=true;render()}
+$("favOnly").onclick=()=>{favMode=!favMode;$("favOnly").textContent=favMode?"★ Tous les résultats":"☆ Mes favoris uniquement";render()}
+["q","city","activity","sort"].forEach(id=>$(id).addEventListener("input",render));
+$("reset").onclick=()=>{$("q").value="";$("city").value="";$("activity").value="";$("sort").value="name";favMode=false;$("favOnly").textContent="☆ Mes favoris uniquement";render()}
+render();
+
+</script>
+<script>
+(async()=>{
+  try {
+    if ("serviceWorker" in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for (const reg of regs) await reg.unregister();
+    }
+    if ("caches" in window) {
+      const keys = await caches.keys();
+      for (const key of keys) await caches.delete(key);
+    }
+  } catch(e) {}
+})();
+</script>
+<script>
+(async()=>{
+  try {
+    if ("serviceWorker" in navigator) {
+      for (const reg of await navigator.serviceWorker.getRegistrations()) await reg.unregister();
+    }
+    if ("caches" in window) {
+      for (const key of await caches.keys()) await caches.delete(key);
+    }
+  } catch(e) {}
+})();
+</script>
+</body></html>
