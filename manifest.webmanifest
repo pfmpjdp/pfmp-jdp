@@ -1,0 +1,10 @@
+{
+  "name": "PFMP Stage",
+  "short_name": "PFMP Stage",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f8",
+  "theme_color": "#16324F",
+  "lang": "fr",
+  "description": "Prototype de recherche d'entreprises pour les PFMP."
+}
