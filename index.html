@@ -132,14 +132,15 @@ let k=$("sort").value;a.sort((x,y)=>String((k==="name"?x.name:k==="city"?x.city:
 function render(){
 let a=filtered();$("count").textContent=`${a.length} entreprise${a.length>1?"s":""}`;
 $("cards").innerHTML=a.length?a.map(c=>{let f=getFollow(c.id), st=statusLabel(f.status);
-return `<article class="card"><div class="top"><div class="identity">${logo(c)}<div><div class="name">${esc(c.name)}</div><div class="activity">${esc(c.activity)}</div><div class="place">📍 ${esc(c.city)} ${esc(c.postal)}</div>${c.origin==="Ajoutée par l'élève"?`<div class="new-origin origin-new">✏️ Ajoutée par toi</div>`:""}${f.events.length?`<div class="small" style="margin-top:6px"><span class="badge ${statusClass(f.status)}">${st}</span></div>`:""}</div></div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div><div class="card-actions"><button class="primary" onclick="openDetail('${esc(c.id)}')">Voir la fiche</button><button onclick="openFollow('${esc(c.id)}')">📋 Ma recherche</button>${c.email?`<a href="mailto:${esc(c.email)}">✉️ E-mail</a>`:c.phone?`<a href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}</div></article>`}).join(""):'<div class="empty">Aucune entreprise ne correspond.</div>'}
+return `<article class="card"><div class="top"><div class="identity">${logo(c)}<div><div class="name">${esc(c.name)}</div><div class="activity">${esc(c.activity)}</div><div class="place">📍 ${esc(c.city)} ${esc(c.postal)}</div>${c.origin==="Ajoutée par l'élève"?`<div class="new-origin origin-new">✏️ Ajoutée par toi</div>`:""}${f?`<div class="small" style="margin-top:6px"><span class="badge ${statusClass(f.status)}">${st}</span></div>`:""}</div></div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div><div class="card-actions"><button class="primary" onclick="openDetail('${esc(c.id)}')">Voir la fiche</button><button onclick="openFollow('${esc(c.id)}')">📋 Ma recherche</button>${c.email?`<a href="mailto:${esc(c.email)}">✉️ E-mail</a>`:c.phone?`<a href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}</div></article>`}).join(""):'<div class="empty">Aucune entreprise ne correspond.</div>'}
 function openDetail(id){let c=companies.find(x=>x.id===id);if(!c)return;show("detailView");
 let maps=c.lat!=null&&c.lon!=null?`https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lon}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((c.address||"")+" "+(c.city||""))}`;
 let web=c.website?`<a target="_blank" rel="noopener" href="${esc(/^https?:\/\//i.test(c.website)?c.website:"https://"+c.website)}">🌐 Site internet</a>`:"";
 $("detail").innerHTML=`<div class="detail-card"><div class="top"><div class="identity">${logo(c)}<div><h2>${esc(c.name)}</h2><div class="activity">${esc(c.activity)}</div></div></div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}');openDetail('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div>
 <div class="label">Adresse</div><div class="value">${esc(c.address)}<br>${esc(c.postal)} ${esc(c.city)}</div><div class="label">Responsable</div><div class="value">${esc(c.responsible)||"Non renseigné"}</div><div class="label">Téléphone</div><div class="value">${c.phone?`<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a>`:"Non renseigné"}</div><div class="label">E-mail</div><div class="value">${c.email?`<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`:"Non renseigné"}</div>
 <div class="actions">${c.phone?`<a class="primary" href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}${c.email?`<a class="primary" href="mailto:${esc(c.email)}">✉️ Envoyer un e-mail</a>`:""}<a href="${maps}" target="_blank" rel="noopener">📍 Itinéraire</a>${web}<button onclick="openFollow('${esc(c.id)}')">📋 Suivre ma démarche</button></div></div>`}
-function openFollow(id){let c=companies.find(x=>x.id===id);if(!c)return;show("followDetailView");renderFollowDetail(c)}
+function openFollow(id){let c=companies.find(x=>x.id===id);if(!c)return;show("followDetailView");renderFollowDetail(c)} 
+function startFollow(id){let c=companies.find(x=>x.id===id);if(!c)return;follow[id]={status:"todo",refusalReason:"",events:[]};saveFollow();renderFollowDetail(c);render()}
 function renderFollowDetail(c){
 let f=getFollow(c.id), events=[...f.events].sort((a,b)=>b.date.localeCompare(a.date));
 $("followDetail").innerHTML=`<div class="follow-card">
@@ -183,7 +184,7 @@ let name=$("nName").value.trim(),address=$("nAddress").value.trim();
 if(!name||!address){alert("Le nom et l'adresse sont obligatoires.");return}
 let id="NEW-"+Date.now().toString(36).toUpperCase();
 let c={id,name,activity:$("nActivity").value.trim(),address,city:$("nCity").value.trim(),postal:$("nPostal").value.trim(),responsible:$("nResponsible").value.trim(),phone:$("nPhone").value.trim(),email:$("nEmail").value.trim(),website:$("nWebsite").value.trim()};
-customCompanies.push(c);saveCustom();companies.push(normalizeCustom(c));getFollow(id);follow[id].status="ongoing";saveFollow();closeModal();show("followDetailView");renderFollowDetail(companies.find(x=>x.id===id));render();
+customCompanies.push(c);saveCustom();companies.push(normalizeCustom(c));follow[id]={status:"todo",refusalReason:"",events:[]};saveFollow();closeModal();show("followDetailView");renderFollowDetail(companies.find(x=>x.id===id));render();
 }
 function openEventModal(id){
 let c=companies.find(x=>x.id===id);$("modalTitle").textContent="Ajouter une démarche — "+c.name;
@@ -215,7 +216,16 @@ function show(v){["companiesView","mapView","followView","detailView","followDet
 function initMap(){if(map)return;map=L.map("map");L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap contributors"}).addTo(map);layer=L.layerGroup().addTo(map);map.setView([43.95,1.35],10)}
 function renderMap(){if(!map)return;layer.clearLayers();let b=[];companies.forEach(c=>{if(c.lat==null||c.lon==null)return;let m=L.marker([c.lat,c.lon]).addTo(layer);m.bindPopup(`<b>${esc(c.name)}</b><br>${esc(c.activity)}<br>📍 ${esc(c.city)}<br><button onclick="openDetail('${esc(c.id)}')">Voir la fiche</button>`);b.push([c.lat,c.lon])});if(b.length)map.fitBounds(b,{padding:[25,25],maxZoom:13})}
 function locate(){if(!navigator.geolocation){alert("Géolocalisation indisponible.");return}navigator.geolocation.getCurrentPosition(p=>{let x=[p.coords.latitude,p.coords.longitude];if(userMarker)userMarker.remove();userMarker=L.circleMarker(x,{radius:9}).addTo(map).bindPopup("📍 Vous êtes ici").openPopup();map.setView(x,12)},()=>alert("Autorise la localisation dans ton navigateur."),{enableHighAccuracy:true,timeout:10000})}
+async function cleanupAutoCreatedFollow(){
+try{
+let done=localStorage.getItem("pfmp-follow-cleanup-v42");
+if(done)return;
+Object.keys(follow).forEach(id=>{let f=follow[id];if(f&&f.status==="todo"&&(!f.events||!f.events.length))delete follow[id]});
+saveFollow();localStorage.setItem("pfmp-follow-cleanup-v42","1");
+}catch(e){}
+}
 async function load(){
+cleanupAutoCreatedFollow();
 try{let r=await fetch("data/entreprises.csv?"+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error("CSV "+r.status);companies=parseCSV(await r.text()).map(adapt).filter(c=>c.id&&c.name); companies=[...companies,...customCompanies.map(normalizeCustom)];
 [...new Set(companies.map(c=>c.city).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr")).forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent="📍 "+x;$("city").appendChild(o)});
 [...new Set(companies.map(c=>c.activity).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr")).forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent="🏢 "+x;$("activity").appendChild(o)});
