@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17324D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PFMP JDP">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<title>PFMP JDP</title>
+<style>
+:root{--b:#17324D;--b2:#285B80;--bg:#F3F5F7;--w:#fff;--t:#18232D;--m:#687782;--l:#DCE3E8;--g:#D89B00;--green:#287A4A;--red:#B63A3A;--blue:#356B9B}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+header{background:linear-gradient(135deg,var(--b),var(--b2));color:#fff;padding:20px 16px 22px;position:sticky;top:0;z-index:20;box-shadow:0 2px 10px #0002}header div,main{max-width:1000px;margin:auto}h1{margin:0;font-size:24px}header p{margin:4px 0 0;opacity:.84;font-size:14px}
+main{padding:14px 14px 105px}.view{display:none}.view.active{display:block}
+.search{background:#fff;border:1px solid var(--l);border-radius:15px;padding:11px}.search input{width:100%;border:0;outline:0;font-size:17px;padding:5px}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}select,input,textarea{font:inherit}select{width:100%;padding:12px;border:1px solid var(--l);border-radius:11px;background:#fff;color:var(--t)}
+.tools{display:flex;gap:8px;align-items:center;margin:10px 0;flex-wrap:wrap}.pill,.mapbtn{border:1px solid var(--l);background:#fff;border-radius:999px;padding:9px 12px;cursor:pointer;font:inherit}.pill.active{background:var(--b);color:#fff}
+.status{display:flex;justify-content:space-between;align-items:center;color:var(--m);font-size:14px;margin:12px 2px}.grid{display:grid;grid-template-columns:1fr;gap:10px}
+.card{background:#fff;border:1px solid var(--l);border-radius:16px;padding:14px;box-shadow:0 1px 4px #00000008}.top{display:flex;gap:10px;justify-content:space-between}.identity{display:flex;gap:11px;min-width:0}
+.logo{width:52px;height:52px;border-radius:11px;border:1px solid var(--l);object-fit:contain;background:#fff;flex:none}.name{font-size:17px;font-weight:750;line-height:1.25}.activity{font-size:13px;color:var(--b2);font-weight:650;margin-top:4px}.place{font-size:13px;color:var(--m);margin-top:6px}
+.star{border:0;background:none;font-size:27px;cursor:pointer;color:#9BA4AB}.star.on{color:var(--g)}
+.card-actions{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:7px;margin-top:12px}.card-actions button,.card-actions a,.actions a,.actions button{border:1px solid var(--l);border-radius:10px;padding:9px;text-align:center;background:#fff;color:var(--b);text-decoration:none;font-weight:650;cursor:pointer;font:inherit}.primary{background:var(--b)!important;color:#fff!important;border-color:var(--b)!important}
+.empty,.loading{background:#fff;border:1px dashed var(--l);border-radius:16px;padding:34px;text-align:center;color:var(--m)}
+.detail .back{border:0;background:none;color:var(--b);font-weight:700;padding:6px 0 12px;cursor:pointer;font:inherit}.detail-card,.follow-card,.summary-card{background:#fff;border:1px solid var(--l);border-radius:18px;padding:18px;margin-bottom:12px}
+.detail-card h2{margin:0 40px 5px 0;font-size:23px}.label{font-size:12px;color:var(--m);margin-top:17px}.value{margin-top:3px;font-size:15px;line-height:1.45}.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.follow-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.follow-head h2{margin:0;font-size:20px}.badge{display:inline-block;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:750;background:#E8EDF1;color:var(--b)}.badge.green{background:#DFF1E5;color:var(--green)}.badge.red{background:#F7E1E1;color:var(--red)}.badge.blue{background:#E1ECF5;color:var(--blue)}
+.event{border-left:3px solid var(--b2);padding:10px 12px;margin:10px 0;background:#F8FAFB;border-radius:0 10px 10px 0}.event strong{display:block}.event small{color:var(--m)}.event .note{margin-top:5px;white-space:pre-wrap}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.field label{display:block;font-size:12px;color:var(--m);margin:0 0 5px}.field input,.field select,.field textarea{width:100%;padding:10px;border:1px solid var(--l);border-radius:10px;background:#fff}.field.full{grid-column:1/-1}.field textarea{min-height:75px;resize:vertical}
+.form-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.btn{border:1px solid var(--l);border-radius:10px;padding:10px 13px;background:#fff;color:var(--b);font-weight:700;cursor:pointer}.btn.primary{background:var(--b);color:#fff}.btn.danger{color:var(--red)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.kpi{background:#F8FAFB;border:1px solid var(--l);border-radius:12px;padding:12px;text-align:center}.kpi b{display:block;font-size:21px;color:var(--b)}.kpi span{font-size:12px;color:var(--m)}
+.profile{display:grid;grid-template-columns:1fr 1fr;gap:9px}.profile input{width:100%;padding:10px;border:1px solid var(--l);border-radius:10px}.summary-row{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:8px;padding:10px 0;border-bottom:1px solid var(--l);font-size:13px;align-items:center}.summary-row:last-child{border-bottom:0}.muted{color:var(--m)}.small{font-size:12px}.map-tools{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}.mapbtn{border-radius:10px;font-weight:700;color:var(--b)}#map{height:calc(100vh - 285px);min-height:500px;border-radius:16px;border:1px solid var(--l);z-index:1}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--l);display:flex;justify-content:center;gap:28px;padding:9px 8px calc(9px + env(safe-area-inset-bottom));z-index:30}nav button{border:0;background:none;color:var(--b);font-weight:750;font:inherit;cursor:pointer}.nav-active{font-weight:900!important}
+.modal-bg{position:fixed;inset:0;background:#0008;z-index:50;display:none;align-items:flex-end;justify-content:center;padding:10px}.modal-bg.show{display:flex}.modal{background:#fff;border-radius:18px 18px 12px 12px;max-width:720px;width:100%;max-height:92vh;overflow:auto;padding:18px}.modal h2{margin:0 0 12px}
+@media(min-width:700px){.grid{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr 1fr 1fr}.kpis{grid-template-columns:repeat(6,1fr)}#map{height:650px}.modal-bg{align-items:center}.modal{border-radius:18px}.summary-row{grid-template-columns:1.5fr 1fr 1fr 1fr 1fr}}
+</style>
+</head>
+<body>
+<header><div><h1>PFMP JDP</h1><p>Recherche et suivi des démarches PFMP</p></div></header>
+<main>
+<section id="companiesView" class="view active">
+<div class="search"><input id="q" placeholder="🔎 Nom, activité, ville, code postal…" autocomplete="off"></div>
+<div class="filters"><select id="city"><option value="">📍 Toutes les villes</option></select><select id="activity"><option value="">🏢 Tous les secteurs</option></select></div>
+<div class="tools"><button class="pill" id="favOnly">☆ Favoris uniquement</button><select id="sort" style="max-width:220px"><option value="name">Trier par nom</option><option value="city">Trier par ville</option><option value="activity">Trier par secteur</option></select></div>
+<div class="status"><span id="count">Chargement…</span><button class="pill" id="reset">Réinitialiser</button></div>
+<div id="cards" class="grid"><div class="loading">Chargement…</div></div>
+</section>
+
+<section id="mapView" class="view"><div class="map-tools"><button class="mapbtn" id="locate">📍 Me localiser</button><button class="mapbtn" id="mapAll">🌍 Toutes les entreprises</button></div><div id="map"></div></section>
+
+<section id="followView" class="view">
+<div class="summary-card">
+<h2 style="margin-top:0">📋 Mon suivi PFMP</h2>
+<p class="muted small">Les démarches sont enregistrées uniquement sur cet appareil.</p>
+<div class="profile"><input id="studentName" placeholder="Nom et prénom"><input id="studentClass" placeholder="Classe"></div>
+<div class="form-actions"><button class="btn primary" id="saveProfile">Enregistrer mes informations</button><button class="btn" id="exportCsv">⬇️ Télécharger le tableau CSV</button><button class="btn" id="exportXlsx">📊 Télécharger Excel</button></div>
+</div>
+<div class="summary-card"><div class="kpis" id="kpis"></div></div>
+<div class="summary-card"><div id="followList"></div></div>
+</section>
+
+<section id="detailView" class="view detail"><button class="back" id="back">← Retour aux entreprises</button><div id="detail"></div></section>
+<section id="followDetailView" class="view"><button class="back btn" id="backFollow">← Retour à mon suivi</button><div id="followDetail"></div></section>
+</main>
+
+<nav>
+<button id="homeBtn">🏢 Entreprises</button>
+<button id="mapBtn">🗺️ Carte</button>
+<button id="followBtn">📋 Mon suivi</button>
+<button id="favoritesBtn">⭐ Favoris</button>
+</nav>
+
+<div id="modalBg" class="modal-bg"><div class="modal"><h2 id="modalTitle">Ajouter une démarche</h2><div id="modalBody"></div></div></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script>
+let companies=[],favorites=[],favMode=false,map=null,layer=null,userMarker=null;
+let follow={}; let profile={name:"",className:""};
+try{favorites=JSON.parse(localStorage.getItem("pfmp-favorites")||"[]")}catch(e){}
+try{follow=JSON.parse(localStorage.getItem("pfmp-follow")||"{}")}catch(e){}
+try{profile=JSON.parse(localStorage.getItem("pfmp-profile")||'{"name":"","className":""}')}catch(e){}
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toISOString().slice(0,10);
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function saveFav(){try{localStorage.setItem("pfmp-favorites",JSON.stringify(favorites))}catch(e){}}
+function saveFollow(){try{localStorage.setItem("pfmp-follow",JSON.stringify(follow))}catch(e){}}
+function saveProfile(){profile={name:$("studentName").value.trim(),className:$("studentClass").value.trim()};try{localStorage.setItem("pfmp-profile",JSON.stringify(profile))}catch(e){};alert("Informations enregistrées.")}
+function isFav(id){return favorites.includes(id)}
+function toggleFav(id){favorites=isFav(id)?favorites.filter(x=>x!==id):[...favorites,id];saveFav();render();if(map)renderMap()}
+function parseCSV(t){
+let rows=[],row=[],cell="",q=false;t=t.replace(/^\uFEFF/,"");
+for(let i=0;i<t.length;i++){let ch=t[i],nx=t[i+1];
+if(ch==='"'&&q&&nx==='"'){cell+='"';i++;continue}
+if(ch==='"'){q=!q;continue}
+if(ch===";"&&!q){row.push(cell);cell="";continue}
+if((ch==="\n"||ch==="\r")&&!q){if(ch==="\r"&&nx==="\n")i++;row.push(cell);cell="";if(row.some(v=>v.trim()))rows.push(row);row=[];continue}
+cell+=ch}
+if(cell!==""||row.length){row.push(cell);if(row.some(v=>v.trim()))rows.push(row)}
+let h=(rows.shift()||[]).map(x=>x.trim());return rows.map(r=>{let o={};h.forEach((x,i)=>o[x]=(r[i]||"").trim());return o})
+}
+function adapt(r){let m=String(r.Coordinates||"").match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/);
+return{id:r.ID,name:r["Raison Sociale"],activity:r["Activité"],address:r.Adresse,city:r["Secteur géographique"],postal:r["CODE POSTAL"],responsible:r["Responsable de l'entreprise"],phone:r["Téléphone entreprise"],email:r.Mail,website:r["Site internet de l'entreprise"],logo:r.Logo,lat:m?+m[1]:null,lon:m?+m[2]:null}}
+function statusLabel(s){return({todo:"⚪ À contacter",ongoing:"🟡 Démarche en cours",rdv:"🔵 RDV prévu",won:"🟢 Stage obtenu",refused:"🔴 Refus",abandoned:"⚫ Abandonnée"})[s]||"⚪ À contacter"}
+function statusClass(s){return s==="won"?"green":s==="refused"?"red":s==="rdv"?"blue":""}
+function getFollow(id){if(!follow[id])follow[id]={status:"todo",refusalReason:"",events:[]};return follow[id]}
+function logo(c){return c.logo?`<img class="logo" src="${esc(c.logo)}" alt="" loading="lazy" onerror="this.style.display='none'">`:""}
+function filtered(){
+let q=$("q").value.trim().toLowerCase(),ci=$("city").value,ac=$("activity").value;
+let a=companies.filter(c=>(!q||[c.name,c.activity,c.address,c.city,c.postal].join(" ").toLowerCase().includes(q))&&(!ci||c.city===ci)&&(!ac||c.activity===ac)&&(!favMode||isFav(c.id)));
+let k=$("sort").value;a.sort((x,y)=>String((k==="name"?x.name:k==="city"?x.city:x.activity)||"").localeCompare(String((k==="name"?y.name:k==="city"?y.city:y.activity)||""),"fr"));return a}
+function render(){
+let a=filtered();$("count").textContent=`${a.length} entreprise${a.length>1?"s":""}`;
+$("cards").innerHTML=a.length?a.map(c=>{let f=getFollow(c.id), st=statusLabel(f.status);
+return `<article class="card"><div class="top"><div class="identity">${logo(c)}<div><div class="name">${esc(c.name)}</div><div class="activity">${esc(c.activity)}</div><div class="place">📍 ${esc(c.city)} ${esc(c.postal)}</div>${f.events.length?`<div class="small" style="margin-top:6px"><span class="badge ${statusClass(f.status)}">${st}</span></div>`:""}</div></div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div><div class="card-actions"><button class="primary" onclick="openDetail('${esc(c.id)}')">Voir la fiche</button><button onclick="openFollow('${esc(c.id)}')">📋 Suivre</button>${c.email?`<a href="mailto:${esc(c.email)}">✉️ E-mail</a>`:c.phone?`<a href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}</div></article>`}).join(""):'<div class="empty">Aucune entreprise ne correspond.</div>'}
+function openDetail(id){let c=companies.find(x=>x.id===id);if(!c)return;show("detailView");
+let maps=c.lat!=null&&c.lon!=null?`https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lon}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((c.address||"")+" "+(c.city||""))}`;
+let web=c.website?`<a target="_blank" rel="noopener" href="${esc(/^https?:\/\//i.test(c.website)?c.website:"https://"+c.website)}">🌐 Site internet</a>`:"";
+$("detail").innerHTML=`<div class="detail-card"><div class="top"><div class="identity">${logo(c)}<div><h2>${esc(c.name)}</h2><div class="activity">${esc(c.activity)}</div></div></div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}');openDetail('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div>
+<div class="label">Adresse</div><div class="value">${esc(c.address)}<br>${esc(c.postal)} ${esc(c.city)}</div><div class="label">Responsable</div><div class="value">${esc(c.responsible)||"Non renseigné"}</div><div class="label">Téléphone</div><div class="value">${c.phone?`<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a>`:"Non renseigné"}</div><div class="label">E-mail</div><div class="value">${c.email?`<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`:"Non renseigné"}</div>
+<div class="actions">${c.phone?`<a class="primary" href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}${c.email?`<a class="primary" href="mailto:${esc(c.email)}">✉️ Envoyer un e-mail</a>`:""}<a href="${maps}" target="_blank" rel="noopener">📍 Itinéraire</a>${web}<button onclick="openFollow('${esc(c.id)}')">📋 Suivre ma démarche</button></div></div>`}
+function openFollow(id){let c=companies.find(x=>x.id===id);if(!c)return;show("followDetailView");renderFollowDetail(c)}
+function renderFollowDetail(c){
+let f=getFollow(c.id), events=[...f.events].sort((a,b)=>b.date.localeCompare(a.date));
+$("followDetail").innerHTML=`<div class="follow-card"><div class="follow-head"><div><h2>${logo(c)} ${esc(c.name)}</h2><div class="activity">${esc(c.activity)} — ${esc(c.city)}</div></div><span class="badge ${statusClass(f.status)}">${statusLabel(f.status)}</span></div>
+<div class="form-grid" style="margin-top:15px"><div class="field"><label>Statut de la démarche</label><select id="fStatus"><option value="todo">À contacter</option><option value="ongoing">Démarche en cours</option><option value="rdv">RDV prévu</option><option value="won">Stage obtenu</option><option value="refused">Refus</option><option value="abandoned">Abandonnée</option></select></div><div class="field" id="reasonField"><label>Motif du refus</label><input id="fReason" placeholder="Ex. pas de place, dates incompatibles…"></div></div>
+<div class="form-actions"><button class="btn primary" onclick="saveStatus('${esc(c.id)}')">Enregistrer le statut</button><button class="btn" onclick="openEventModal('${esc(c.id)}')">＋ Ajouter une démarche</button></div></div>
+<div class="follow-card"><h3 style="margin-top:0">📜 Historique</h3>${events.length?events.map(e=>`<div class="event"><strong>${esc(e.type)} — ${formatDate(e.date)}</strong>${e.result?`<div><b>Résultat :</b> ${esc(e.result)}</div>`:""}${e.rdvDate?`<div><b>RDV :</b> ${formatDate(e.rdvDate)}</div>`:""}${e.note?`<div class="note">${esc(e.note)}</div>`:""}</div>`).join(""):'<div class="empty">Aucune démarche enregistrée pour le moment.</div>'}</div>
+<div class="follow-card"><button class="btn danger" onclick="removeFollow('${esc(c.id)}')">Supprimer le suivi de cette entreprise</button></div>`;
+$("fStatus").value=f.status;$("fReason").value=f.refusalReason||"";toggleReason();
+$("fStatus").onchange=toggleReason;
+}
+function toggleReason(){$("reasonField").style.display=$("fStatus").value==="refused"?"block":"none"}
+function saveStatus(id){let f=getFollow(id);f.status=$("fStatus").value;f.refusalReason=$("fReason").value.trim();saveFollow();let c=companies.find(x=>x.id===id);renderFollowDetail(c);render()}
+function removeFollow(id){if(!confirm("Supprimer tout l'historique de cette entreprise ?"))return;delete follow[id];saveFollow();show("followView");renderFollow()}
+function formatDate(s){if(!s)return "—";let p=s.split("-");return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:s}
+function openEventModal(id){
+let c=companies.find(x=>x.id===id);$("modalTitle").textContent="Ajouter une démarche — "+c.name;
+$("modalBody").innerHTML=`<div class="form-grid"><div class="field"><label>Type de démarche</label><select id="eType"><option>📞 Appel</option><option>📧 E-mail</option><option>📄 Dépôt de CV</option><option>🤝 Rendez-vous</option><option>📱 Autre contact</option></select></div><div class="field"><label>Date</label><input type="date" id="eDate" value="${today()}"></div><div class="field"><label>Résultat</label><input id="eResult" placeholder="Ex. RDV obtenu, pas de réponse, refus…"></div><div class="field"><label>Date du RDV (si prévu)</label><input type="date" id="eRdv"></div><div class="field full"><label>Commentaire / suite à donner</label><textarea id="eNote" placeholder="Ex. rappeler vendredi après-midi…"></textarea></div></div><div class="form-actions"><button class="btn primary" onclick="addEvent('${esc(id)}')">Enregistrer</button><button class="btn" onclick="closeModal()">Annuler</button></div>`;
+$("modalBg").classList.add("show")}
+function closeModal(){$("modalBg").classList.remove("show")}
+function addEvent(id){
+let f=getFollow(id);let e={type:$("eType").value,date:$("eDate").value||today(),result:$("eResult").value.trim(),rdvDate:$("eRdv").value,note:$("eNote").value.trim(),created:new Date().toISOString()};
+f.events.push(e);
+if(e.rdvDate)f.status="rdv";
+else if(/refus/i.test(e.result))f.status="refused";
+else if(e.result||e.note)f.status=f.status==="todo"?"ongoing":f.status;
+saveFollow();closeModal();let c=companies.find(x=>x.id===id);show("followDetailView");renderFollowDetail(c);render()}
+function renderFollow(){
+$("studentName").value=profile.name||"";$("studentClass").value=profile.className||"";
+let ids=Object.keys(follow).filter(id=>companies.some(c=>c.id===id&&follow[id].events.length));
+let won=ids.filter(id=>follow[id].status==="won").length,ref=ids.filter(id=>follow[id].status==="refused").length,rdv=ids.filter(id=>follow[id].status==="rdv").length,ongo=ids.filter(id=>follow[id].status==="ongoing").length,todo=ids.filter(id=>follow[id].status==="todo").length;
+$("kpis").innerHTML=`<div class="kpi"><b>${ids.length}</b><span>Entreprises suivies</span></div><div class="kpi"><b>${ongo}</b><span>En cours</span></div><div class="kpi"><b>${rdv}</b><span>RDV prévus</span></div><div class="kpi"><b>${won}</b><span>Stages obtenus</span></div><div class="kpi"><b>${ref}</b><span>Refus</span></div><div class="kpi"><b>${todo}</b><span>À contacter</span></div>`;
+if(!ids.length){$("followList").innerHTML='<div class="empty">Aucune démarche enregistrée. Commence par une entreprise dans la liste.</div>';return}
+ids.sort((a,b)=>companies.find(c=>c.id===a).name.localeCompare(companies.find(c=>c.id===b).name,"fr"));
+$("followList").innerHTML=ids.map(id=>{let c=companies.find(x=>x.id===id),f=follow[id],last=[...f.events].sort((a,b)=>b.date.localeCompare(a.date))[0];return `<div class="summary-row"><div><b>${esc(c.name)}</b><div class="muted">${esc(c.city)}</div></div><div><span class="badge ${statusClass(f.status)}">${statusLabel(f.status)}</span></div><div class="small">${last?formatDate(last.date):"—"}</div><div><button class="btn" onclick="openFollow('${esc(c.id)}')">Voir</button></div></div>`}).join("")}
+function rowsForExport(){
+let ids=Object.keys(follow).filter(id=>companies.some(c=>c.id===id&&follow[id].events.length));let rows=[];
+ids.forEach(id=>{let c=companies.find(x=>x.id===id),f=follow[id],events=[...f.events].sort((a,b)=>a.date.localeCompare(b.date));rows.push({"Élève":profile.name,"Classe":profile.className,"Entreprise":c.name,"Ville":c.city,"Secteur":c.activity,"Statut":statusLabel(f.status),"Motif du refus":f.refusalReason||"","Nombre de démarches":events.length,"Dernière démarche":events.length?formatDate(events[events.length-1].date):"","Dernier résultat":events.length?events[events.length-1].result:"","Date RDV":events.map(e=>e.rdvDate).filter(Boolean).slice(-1)[0]?formatDate(events.map(e=>e.rdvDate).filter(Boolean).slice(-1)[0]):""})});return rows}
+function downloadBlob(blob,name){let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+function exportCsv(){let rows=rowsForExport();if(!rows.length){alert("Aucune démarche à exporter.");return}let h=Object.keys(rows[0]);let csv="\uFEFF"+h.join(";")+"\n"+rows.map(r=>h.map(k=>`"${String(r[k]??"").replace(/"/g,'""')}"`).join(";")).join("\n");downloadBlob(new Blob([csv],{type:"text/csv;charset=utf-8"}),"suivi-PFMP.csv")}
+function exportXlsx(){let rows=rowsForExport();if(!rows.length){alert("Aucune démarche à exporter.");return}if(!window.XLSX){alert("Le module Excel n'est pas disponible. Utilise le CSV.");return}let ws=XLSX.utils.json_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Suivi PFMP");XLSX.writeFile(wb,"suivi-PFMP.xlsx")}
+function show(v){["companiesView","mapView","followView","detailView","followDetailView"].forEach(x=>$(x).classList.remove("active"));$(v).classList.add("active");window.scrollTo(0,0);if(v==="mapView")setTimeout(()=>{initMap();renderMap()},50);if(v==="followView")renderFollow()}
+function initMap(){if(map)return;map=L.map("map");L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"&copy; OpenStreetMap contributors"}).addTo(map);layer=L.layerGroup().addTo(map);map.setView([43.95,1.35],10)}
+function renderMap(){if(!map)return;layer.clearLayers();let b=[];companies.forEach(c=>{if(c.lat==null||c.lon==null)return;let m=L.marker([c.lat,c.lon]).addTo(layer);m.bindPopup(`<b>${esc(c.name)}</b><br>${esc(c.activity)}<br>📍 ${esc(c.city)}<br><button onclick="openDetail('${esc(c.id)}')">Voir la fiche</button>`);b.push([c.lat,c.lon])});if(b.length)map.fitBounds(b,{padding:[25,25],maxZoom:13})}
+function locate(){if(!navigator.geolocation){alert("Géolocalisation indisponible.");return}navigator.geolocation.getCurrentPosition(p=>{let x=[p.coords.latitude,p.coords.longitude];if(userMarker)userMarker.remove();userMarker=L.circleMarker(x,{radius:9}).addTo(map).bindPopup("📍 Vous êtes ici").openPopup();map.setView(x,12)},()=>alert("Autorise la localisation dans ton navigateur."),{enableHighAccuracy:true,timeout:10000})}
+async function load(){
+try{let r=await fetch("data/entreprises.csv?"+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error("CSV "+r.status);companies=parseCSV(await r.text()).map(adapt).filter(c=>c.id&&c.name);
+[...new Set(companies.map(c=>c.city).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr")).forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent="📍 "+x;$("city").appendChild(o)});
+[...new Set(companies.map(c=>c.activity).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr")).forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent="🏢 "+x;$("activity").appendChild(o)});
+render()}catch(e){$("count").textContent="Erreur de chargement";$("cards").innerHTML='<div class="empty">Impossible de charger la base. Vérifie que data/entreprises.csv est bien présent.</div>'}}
+$("homeBtn").onclick=()=>{favMode=false;$("favOnly").classList.remove("active");show("companiesView");render()};
+$("mapBtn").onclick=()=>show("mapView");
+$("followBtn").onclick=()=>show("followView");
+$("favoritesBtn").onclick=()=>{favMode=true;$("favOnly").classList.add("active");show("companiesView");render()};
+$("back").onclick=()=>show("companiesView");$("backFollow").onclick=()=>show("followView");
+$("favOnly").onclick=()=>{favMode=!favMode;$("favOnly").classList.toggle("active",favMode);$("favOnly").textContent=favMode?"★ Tous les résultats":"☆ Favoris uniquement";render()};
+$("reset").onclick=()=>{$("q").value="";$("city").value="";$("activity").value="";$("sort").value="name";favMode=false;$("favOnly").classList.remove("active");$("favOnly").textContent="☆ Favoris uniquement";render()};
+["q","city","activity","sort"].forEach(id=>$(id).addEventListener("input",()=>{render();if(map)renderMap()}));
+$("locate").onclick=locate;$("mapAll").onclick=()=>{if(map){let b=companies.filter(c=>c.lat!=null).map(c=>[c.lat,c.lon]);if(b.length)map.fitBounds(b,{padding:[25,25],maxZoom:12})}};
+$("saveProfile").onclick=saveProfile;$("exportCsv").onclick=exportCsv;$("exportXlsx").onclick=exportXlsx;
+$("modalBg").addEventListener("click",e=>{if(e.target===$("modalBg"))closeModal()});
+$("studentName").value=profile.name||"";$("studentClass").value=profile.className||"";
+load();
+</script>
+</body></html>
