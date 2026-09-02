@@ -37,6 +37,12 @@ main{padding:18px 16px 110px}.view{display:none}.view.active{display:block}
 nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;justify-content:center;gap:34px;padding:10px 8px calc(10px + env(safe-area-inset-bottom));z-index:30}nav button{border:0;background:none;color:var(--muted);font-weight:650;font:inherit;cursor:pointer}nav button.nav-active{color:var(--ink);font-weight:850}
 .modal-bg{position:fixed;inset:0;background:#0007;z-index:50;display:none;align-items:flex-end;justify-content:center;padding:10px}.modal-bg.show{display:flex}.modal{background:#fff;border-radius:19px 19px 12px 12px;max-width:720px;width:100%;max-height:92vh;overflow:auto;padding:19px}.modal h2{margin:0 0 14px}
 @media(min-width:700px){.grid{grid-template-columns:1fr 1fr}.filters{grid-template-columns:1fr 1fr 1fr}.home-actions{grid-template-columns:repeat(4,1fr)}.kpis{grid-template-columns:repeat(6,1fr)}#map{height:650px}.modal-bg{align-items:center}.modal{border-radius:19px}.summary-row{grid-template-columns:1.5fr 1fr 1fr 1fr 1fr}}
+<style>
+.screen-head{display:flex;align-items:center;gap:14px;margin:0 0 12px;flex-wrap:wrap}
+.screen-head h2{margin:0;font-size:25px;letter-spacing:-.4px}
+.home-return{border:0;background:none;color:var(--ink);font-weight:800;font:inherit;cursor:pointer;padding:6px 0}
+.new-origin{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-top:6px}
+.origin-new{color:var(--blue)}
 </style>
 </head>
 <body>
@@ -57,9 +63,9 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid 
 <div id="cards" class="grid"><div class="loading">Chargement…</div></div>
 </section>
 
-<section id="mapView" class="view"><div class="map-tools"><button class="mapbtn" id="locate">📍 Me localiser</button><button class="mapbtn" id="mapAll">🌍 Toutes les entreprises</button></div><div id="map"></div></section>
+<section id="mapView" class="view"><div class="screen-head"><button class="home-return" onclick="show('companiesView')">← Accueil</button><h2>🗺️ Carte</h2></div><div class="map-tools"><button class="mapbtn" id="locate">📍 Me localiser</button><button class="mapbtn" id="mapAll">🌍 Toutes les entreprises</button></div><div id="map"></div></section>
 
-<section id="followView" class="view">
+<section id="followView" class="view"><div class="screen-head"><button class="home-return" onclick="show('companiesView')">← Accueil</button></div>
 <div class="summary-card">
 <h2 style="margin-top:0">👤 MON PROFIL ÉLÈVE</h2>
 <p class="muted">Ton carnet personnel de recherche de PFMP. Les données restent sur cet appareil.</p>
@@ -69,12 +75,12 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid 
 </div>
 <div class="form-actions"><button class="btn primary" id="saveProfile">💾 Enregistrer mon profil</button><button class="btn" id="exportXlsx">📊 Télécharger Excel</button></div>
 </div>
-<div class="summary-card"><h2 style="margin-top:0">📊 MA RECHERCHE DE PFMP</h2><div class="kpis" id="kpis"></div></div>
+<div class="summary-card" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2 style="margin:0">📊 MA RECHERCHE DE PFMP</h2><p class="muted small" style="margin:5px 0 0">Entreprises de la base et entreprises ajoutées par toi.</p></div><button class="btn primary" onclick="openNewCompanyModal()">＋ Ajouter une entreprise</button></div><div class="summary-card"><h2 style="margin-top:0">📈 Mon bilan</h2><div class="kpis" id="kpis"></div></div>
 <div class="summary-card"><div id="followList"></div></div>
 </section>
 
-<section id="detailView" class="view detail"><button class="back" id="back">← Retour aux entreprises</button><div id="detail"></div></section>
-<section id="followDetailView" class="view"><button class="back btn" id="backFollow">← Retour à mon suivi</button><div id="followDetail"></div></section>
+<section id="detailView" class="view detail"><div class="screen-head"><button class="home-return" onclick="show('companiesView')">← Accueil</button><button class="back" id="back">← Entreprises</button></div><div id="detail"></div></section>
+<section id="followDetailView" class="view"><div class="screen-head"><button class="home-return" onclick="show('companiesView')">← Accueil</button><button class="back btn" id="backFollow">← Ma recherche</button></div><div id="followDetail"></div></section>
 </main>
 
 <nav>
@@ -90,15 +96,15 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid 
 <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 <script>
 let companies=[],favorites=[],favMode=false,map=null,layer=null,userMarker=null;
-let follow={}; let profile={name:"",className:""};
+let follow={}; let profile={name:"",className:""}; let customCompanies=[];
 try{favorites=JSON.parse(localStorage.getItem("pfmp-favorites")||"[]")}catch(e){}
 try{follow=JSON.parse(localStorage.getItem("pfmp-follow")||"{}")}catch(e){}
-try{profile=JSON.parse(localStorage.getItem("pfmp-profile")||'{"name":"","className":""}')}catch(e){}
+try{profile=JSON.parse(localStorage.getItem("pfmp-profile")||'{"name":"","className":""}')}catch(e){} try{customCompanies=JSON.parse(localStorage.getItem("pfmp-custom-companies")||"[]")}catch(e){}
 const $=id=>document.getElementById(id);
 const today=()=>new Date().toISOString().slice(0,10);
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function saveFav(){try{localStorage.setItem("pfmp-favorites",JSON.stringify(favorites))}catch(e){}}
-function saveFollow(){try{localStorage.setItem("pfmp-follow",JSON.stringify(follow))}catch(e){}}
+function saveFollow(){try{localStorage.setItem("pfmp-follow",JSON.stringify(follow))}catch(e){}} function saveCustom(){try{localStorage.setItem("pfmp-custom-companies",JSON.stringify(customCompanies))}catch(e){}}
 function saveProfile(){profile={name:$("studentName").value.trim(),className:$("studentClass").value.trim()};try{localStorage.setItem("pfmp-profile",JSON.stringify(profile))}catch(e){};alert("Informations enregistrées.")}
 function isFav(id){return favorites.includes(id)}
 function toggleFav(id){favorites=isFav(id)?favorites.filter(x=>x!==id):[...favorites,id];saveFav();render();if(map)renderMap()}
@@ -114,9 +120,9 @@ if(cell!==""||row.length){row.push(cell);if(row.some(v=>v.trim()))rows.push(row)
 let h=(rows.shift()||[]).map(x=>x.trim());return rows.map(r=>{let o={};h.forEach((x,i)=>o[x]=(r[i]||"").trim());return o})
 }
 function adapt(r){let m=String(r.Coordinates||"").match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/);
-return{id:r.ID,name:r["Raison Sociale"],activity:r["Activité"],address:r.Adresse,city:r["Secteur géographique"],postal:r["CODE POSTAL"],responsible:r["Responsable de l'entreprise"],phone:r["Téléphone entreprise"],email:r.Mail,website:r["Site internet de l'entreprise"],logo:r.Logo,lat:m?+m[1]:null,lon:m?+m[2]:null}}
-function statusLabel(s){return({todo:"⚪ À contacter",ongoing:"🟡 Démarche en cours",rdv:"🔵 RDV prévu",won:"🟢 Stage obtenu",refused:"🔴 Refus",abandoned:"⚫ Abandonnée"})[s]||"⚪ À contacter"}
-function statusClass(s){return s==="won"?"green":s==="refused"?"red":s==="rdv"?"blue":""}
+return{id:r.ID,name:r["Raison Sociale"],activity:r["Activité"],address:r.Adresse,city:r["Secteur géographique"],postal:r["CODE POSTAL"],responsible:r["Responsable de l'entreprise"],phone:r["Téléphone entreprise"],email:r.Mail,website:r["Site internet de l'entreprise"],logo:r.Logo,lat:m?+m[1]:null,lon:m?+m[2]:null,origin:"Base officielle"}}
+function normalizeCustom(c){return {id:c.id,name:c.name,activity:c.activity||"",address:c.address||"",city:c.city||"",postal:c.postal||"",responsible:c.responsible||"",phone:c.phone||"",email:c.email||"",website:c.website||"",logo:"",lat:null,lon:null,origin:"Ajoutée par l'élève"}} function statusLabel(s){return({todo:"⚪ À contacter",ongoing:"🟡 Démarche en cours",rdv:"🔵 RDV prévu",won:"🟢 Stage obtenu",refused:"🔴 Refus",closed:"⚫ Entreprise fermée",abandoned:"⚫ Abandonnée"})[s]||"⚪ À contacter"}
+function statusClass(s){return s==="won"?"green":(s==="refused"||s==="closed")?"red":s==="rdv"?"blue":""}
 function getFollow(id){if(!follow[id])follow[id]={status:"todo",refusalReason:"",events:[]};return follow[id]}
 function logo(c){return c.logo?`<img class="logo" src="${esc(c.logo)}" alt="" loading="lazy" onerror="this.style.display='none'">`:""}
 function filtered(){
@@ -126,7 +132,7 @@ let k=$("sort").value;a.sort((x,y)=>String((k==="name"?x.name:k==="city"?x.city:
 function render(){
 let a=filtered();$("count").textContent=`${a.length} entreprise${a.length>1?"s":""}`;
 $("cards").innerHTML=a.length?a.map(c=>{let f=getFollow(c.id), st=statusLabel(f.status);
-return `<article class="card"><div class="top"><div class="identity">${logo(c)}<div><div class="name">${esc(c.name)}</div><div class="activity">${esc(c.activity)}</div><div class="place">📍 ${esc(c.city)} ${esc(c.postal)}</div>${f.events.length?`<div class="small" style="margin-top:6px"><span class="badge ${statusClass(f.status)}">${st}</span></div>`:""}</div></div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div><div class="card-actions"><button class="primary" onclick="openDetail('${esc(c.id)}')">Voir la fiche</button><button onclick="openFollow('${esc(c.id)}')">📋 Ma recherche</button>${c.email?`<a href="mailto:${esc(c.email)}">✉️ E-mail</a>`:c.phone?`<a href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}</div></article>`}).join(""):'<div class="empty">Aucune entreprise ne correspond.</div>'}
+return `<article class="card"><div class="top"><div class="identity">${logo(c)}<div><div class="name">${esc(c.name)}</div><div class="activity">${esc(c.activity)}</div><div class="place">📍 ${esc(c.city)} ${esc(c.postal)}</div>${c.origin==="Ajoutée par l'élève"?`<div class="new-origin origin-new">✏️ Ajoutée par toi</div>`:""}${f.events.length?`<div class="small" style="margin-top:6px"><span class="badge ${statusClass(f.status)}">${st}</span></div>`:""}</div></div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div><div class="card-actions"><button class="primary" onclick="openDetail('${esc(c.id)}')">Voir la fiche</button><button onclick="openFollow('${esc(c.id)}')">📋 Ma recherche</button>${c.email?`<a href="mailto:${esc(c.email)}">✉️ E-mail</a>`:c.phone?`<a href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}</div></article>`}).join(""):'<div class="empty">Aucune entreprise ne correspond.</div>'}
 function openDetail(id){let c=companies.find(x=>x.id===id);if(!c)return;show("detailView");
 let maps=c.lat!=null&&c.lon!=null?`https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lon}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((c.address||"")+" "+(c.city||""))}`;
 let web=c.website?`<a target="_blank" rel="noopener" href="${esc(/^https?:\/\//i.test(c.website)?c.website:"https://"+c.website)}">🌐 Site internet</a>`:"";
@@ -142,7 +148,7 @@ $("followDetail").innerHTML=`<div class="follow-card">
 <h3>📍 État de ma recherche</h3>
 <div style="margin-bottom:12px"><span class="badge ${statusClass(f.status)}" style="font-size:14px">${statusLabel(f.status)}</span></div><div class="progress"><span class="${["todo","ongoing","rdv","won"].indexOf(f.status)>=0?"done":""}"></span><span class="${["ongoing","rdv","won"].includes(f.status)?"done":""}"></span><span class="${["rdv","won"].includes(f.status)?"done":""}"></span><span class="${f.status==="won"?"done":""}"></span></div>
 <div class="progress-labels"><span>À contacter</span><span>Contact</span><span>RDV</span><span>Stage</span></div>
-<div class="form-grid"><div class="field"><label>Statut actuel</label><select id="fStatus"><option value="todo">À contacter</option><option value="ongoing">Contact effectué / démarche en cours</option><option value="rdv">Rendez-vous prévu</option><option value="won">Stage obtenu</option><option value="refused">Refus</option><option value="abandoned">Abandonnée</option></select></div><div class="field" id="reasonField"><label>Motif du refus</label><input id="fReason" placeholder="Ex. pas de place, dates incompatibles…"></div></div>
+<div class="form-grid"><div class="field"><label>Statut actuel</label><select id="fStatus"><option value="todo">À contacter</option><option value="ongoing">Contact effectué / démarche en cours</option><option value="rdv">Rendez-vous prévu</option><option value="won">Stage obtenu</option><option value="refused">Refus</option><option value="closed">Entreprise fermée</option><option value="abandoned">Abandonnée</option></select></div><div class="field" id="reasonField"><label>Motif du refus</label><input id="fReason" placeholder="Ex. pas de place, dates incompatibles…"></div></div>
 <div class="form-actions"><button class="btn primary" onclick="saveStatus('${esc(c.id)}')">💾 Enregistrer l'état</button></div>
 </div></div>
 <div class="follow-card"><h3 style="margin-top:0">📜 Historique de mes démarches</h3>
@@ -155,15 +161,40 @@ function toggleReason(){$("reasonField").style.display=$("fStatus").value==="ref
 function saveStatus(id){let f=getFollow(id);f.status=$("fStatus").value;f.refusalReason=$("fReason").value.trim();saveFollow();let c=companies.find(x=>x.id===id);renderFollowDetail(c);render()}
 function removeFollow(id){if(!confirm("Supprimer tout l'historique de cette entreprise ?"))return;delete follow[id];saveFollow();show("followView");renderFollow()}
 function formatDate(s){if(!s)return "—";let p=s.split("-");return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:s}
+function openNewCompanyModal(){
+$("modalTitle").textContent="＋ Nouvelle entreprise";
+$("modalBody").innerHTML=`<p class="muted small">Seuls le nom et l'adresse sont obligatoires. Les autres informations peuvent être ajoutées plus tard.</p>
+<div class="form-grid">
+<div class="field"><label>Nom de l'entreprise *</label><input id="nName" placeholder="Nom de l'entreprise"></div>
+<div class="field"><label>Activité / secteur</label><input id="nActivity" placeholder="Facultatif"></div>
+<div class="field full"><label>Adresse *</label><input id="nAddress" placeholder="Adresse de l'entreprise"></div>
+<div class="field"><label>Ville</label><input id="nCity" placeholder="Facultatif"></div>
+<div class="field"><label>Code postal</label><input id="nPostal" placeholder="Facultatif"></div>
+<div class="field"><label>Nom du contact</label><input id="nResponsible" placeholder="Facultatif"></div>
+<div class="field"><label>Téléphone</label><input id="nPhone" placeholder="Facultatif"></div>
+<div class="field"><label>E-mail</label><input id="nEmail" placeholder="Facultatif"></div>
+<div class="field"><label>Site internet</label><input id="nWebsite" placeholder="Facultatif"></div>
+</div>
+<div class="form-actions"><button class="btn primary" onclick="createNewCompany()">Créer et commencer ma recherche</button><button class="btn" onclick="closeModal()">Annuler</button></div>`;
+$("modalBg").classList.add("show");
+}
+function createNewCompany(){
+let name=$("nName").value.trim(),address=$("nAddress").value.trim();
+if(!name||!address){alert("Le nom et l'adresse sont obligatoires.");return}
+let id="NEW-"+Date.now().toString(36).toUpperCase();
+let c={id,name,activity:$("nActivity").value.trim(),address,city:$("nCity").value.trim(),postal:$("nPostal").value.trim(),responsible:$("nResponsible").value.trim(),phone:$("nPhone").value.trim(),email:$("nEmail").value.trim(),website:$("nWebsite").value.trim()};
+customCompanies.push(c);saveCustom();companies.push(normalizeCustom(c));getFollow(id);follow[id].status="ongoing";saveFollow();closeModal();show("followDetailView");renderFollowDetail(companies.find(x=>x.id===id));render();
+}
 function openEventModal(id){
 let c=companies.find(x=>x.id===id);$("modalTitle").textContent="Ajouter une démarche — "+c.name;
-$("modalBody").innerHTML=`<div class="form-grid"><div class="field"><label>Type de démarche</label><select id="eType"><option>📞 Appel</option><option>📧 E-mail</option><option>📄 Dépôt de CV</option><option>🤝 Rendez-vous</option><option>📱 Autre contact</option></select></div><div class="field"><label>Date</label><input type="date" id="eDate" value="${today()}"></div><div class="field"><label>Résultat</label><input id="eResult" placeholder="Ex. RDV obtenu, pas de réponse, refus…"></div><div class="field"><label>Date du RDV (si prévu)</label><input type="date" id="eRdv"></div><div class="field full"><label>Commentaire / suite à donner</label><textarea id="eNote" placeholder="Ex. rappeler vendredi après-midi…"></textarea></div></div><div class="form-actions"><button class="btn primary" onclick="addEvent('${esc(id)}')">Enregistrer</button><button class="btn" onclick="closeModal()">Annuler</button></div>`;
+$("modalBody").innerHTML=`<div class="form-grid"><div class="field"><label>Type de démarche</label><select id="eType"><option>📞 Appel</option><option>📧 E-mail</option><option>📄 Dépôt de CV</option><option>🤝 Rendez-vous</option><option>📱 Autre contact</option></select></div><div class="field"><label>Date</label><input type="date" id="eDate" value="${today()}"></div><div class="field"><label>Résultat</label><select id="eResult"><option value="">— Choisir si nécessaire —</option><option>Pas de réponse</option><option>À rappeler</option><option>RDV obtenu</option><option>Refus</option><option>Entreprise définitivement fermée</option><option>Autre</option></select></div><div class="field"><label>Date du RDV (si prévu)</label><input type="date" id="eRdv"></div><div class="field full"><label>Commentaire / suite à donner</label><textarea id="eNote" placeholder="Ex. rappeler vendredi après-midi…"></textarea></div></div><div class="form-actions"><button class="btn primary" onclick="addEvent('${esc(id)}')">Enregistrer</button><button class="btn" onclick="closeModal()">Annuler</button></div>`;
 $("modalBg").classList.add("show")}
 function closeModal(){$("modalBg").classList.remove("show")}
 function addEvent(id){
 let f=getFollow(id);let e={type:$("eType").value,date:$("eDate").value||today(),result:$("eResult").value.trim(),rdvDate:$("eRdv").value,note:$("eNote").value.trim(),created:new Date().toISOString()};
 f.events.push(e);
 if(e.rdvDate)f.status="rdv";
+else if(/entreprise définitivement fermée/i.test(e.result))f.status="closed";
 else if(/refus/i.test(e.result))f.status="refused";
 else if(e.result||e.note)f.status=f.status==="todo"?"ongoing":f.status;
 saveFollow();closeModal();let c=companies.find(x=>x.id===id);show("followDetailView");renderFollowDetail(c);render()}
@@ -177,7 +208,7 @@ ids.sort((a,b)=>companies.find(c=>c.id===a).name.localeCompare(companies.find(c=
 $("followList").innerHTML=ids.map(id=>{let c=companies.find(x=>x.id===id),f=follow[id],last=[...f.events].sort((a,b)=>b.date.localeCompare(a.date))[0];return `<div class="summary-row"><div><b>${esc(c.name)}</b><div class="muted">${esc(c.city)}</div></div><div><span class="badge ${statusClass(f.status)}">${statusLabel(f.status)}</span></div><div class="small">${last?formatDate(last.date):"—"}</div><div><button class="btn" onclick="openFollow('${esc(c.id)}')">Voir</button></div></div>`}).join("")}
 function rowsForExport(){
 let ids=Object.keys(follow).filter(id=>companies.some(c=>c.id===id&&follow[id].events.length));let rows=[];
-ids.forEach(id=>{let c=companies.find(x=>x.id===id),f=follow[id],events=[...f.events].sort((a,b)=>a.date.localeCompare(b.date));rows.push({"Élève":profile.name,"Classe":profile.className,"Entreprise":c.name,"Ville":c.city,"Secteur":c.activity,"Statut":statusLabel(f.status),"Motif du refus":f.refusalReason||"","Nombre de démarches":events.length,"Dernière démarche":events.length?formatDate(events[events.length-1].date):"","Dernier résultat":events.length?events[events.length-1].result:"","Date RDV":events.map(e=>e.rdvDate).filter(Boolean).slice(-1)[0]?formatDate(events.map(e=>e.rdvDate).filter(Boolean).slice(-1)[0]):""})});return rows}
+ids.forEach(id=>{let c=companies.find(x=>x.id===id),f=follow[id],events=[...f.events].sort((a,b)=>a.date.localeCompare(b.date));rows.push({"Élève":profile.name,"Classe":profile.className,"Entreprise":c.name,"Origine":c.origin||"Base officielle","Ville":c.city,"Secteur":c.activity,"Statut":statusLabel(f.status),"Motif du refus":f.refusalReason||"","Nombre de démarches":events.length,"Dernière démarche":events.length?formatDate(events[events.length-1].date):"","Dernier résultat":events.length?events[events.length-1].result:"","À vérifier dans la base":f.status==="closed"?"OUI":"","Date RDV":events.map(e=>e.rdvDate).filter(Boolean).slice(-1)[0]?formatDate(events.map(e=>e.rdvDate).filter(Boolean).slice(-1)[0]):""})});return rows}
 function downloadBlob(blob,name){let a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
 function exportXlsx(){let rows=rowsForExport();if(!rows.length){alert("Aucune démarche à exporter.");return}if(!window.XLSX){alert("Le module Excel n'est pas disponible.");return}let ws=XLSX.utils.json_to_sheet(rows);let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Détail");let stats=[["Bilan de recherche PFMP",""],["Élève",profile.name||""],["Classe",profile.className||""],["Date d'export",formatDate(today())],["",""],["Indicateur","Nombre"],["Entreprises suivies",rows.length],["Démarches enregistrées",rows.reduce((n,r)=>n+Number(r["Nombre de démarches"]||0),0)],["RDV prévus",rows.filter(r=>r["Statut"].includes("RDV")).length],["Stages obtenus",rows.filter(r=>r["Statut"].includes("Stage obtenu")).length],["Refus",rows.filter(r=>r["Statut"].includes("Refus")).length]];let ws2=XLSX.utils.aoa_to_sheet(stats);XLSX.utils.book_append_sheet(wb,ws2,"Bilan");let safe=(profile.name||"eleve").replace(/[^a-z0-9àâäéèêëîïôöùûüÿç _-]/gi,"").trim().replace(/\s+/g,"_");XLSX.writeFile(wb,`Suivi_PFMP_${safe||"eleve"}.xlsx`)}
 function show(v){["companiesView","mapView","followView","detailView","followDetailView"].forEach(x=>$(x).classList.remove("active"));$(v).classList.add("active");["homeBtn","mapBtn","followBtn","favoritesBtn"].forEach(x=>$(x).classList.remove("nav-active"));if(v==="companiesView")$("homeBtn").classList.add("nav-active");if(v==="mapView")$("mapBtn").classList.add("nav-active");if(v==="followView"||v==="followDetailView")$("followBtn").classList.add("nav-active");window.scrollTo(0,0);if(v==="mapView")setTimeout(()=>{initMap();renderMap()},50);if(v==="followView")renderFollow()}
@@ -185,7 +216,7 @@ function initMap(){if(map)return;map=L.map("map");L.tileLayer("https://tile.open
 function renderMap(){if(!map)return;layer.clearLayers();let b=[];companies.forEach(c=>{if(c.lat==null||c.lon==null)return;let m=L.marker([c.lat,c.lon]).addTo(layer);m.bindPopup(`<b>${esc(c.name)}</b><br>${esc(c.activity)}<br>📍 ${esc(c.city)}<br><button onclick="openDetail('${esc(c.id)}')">Voir la fiche</button>`);b.push([c.lat,c.lon])});if(b.length)map.fitBounds(b,{padding:[25,25],maxZoom:13})}
 function locate(){if(!navigator.geolocation){alert("Géolocalisation indisponible.");return}navigator.geolocation.getCurrentPosition(p=>{let x=[p.coords.latitude,p.coords.longitude];if(userMarker)userMarker.remove();userMarker=L.circleMarker(x,{radius:9}).addTo(map).bindPopup("📍 Vous êtes ici").openPopup();map.setView(x,12)},()=>alert("Autorise la localisation dans ton navigateur."),{enableHighAccuracy:true,timeout:10000})}
 async function load(){
-try{let r=await fetch("data/entreprises.csv?"+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error("CSV "+r.status);companies=parseCSV(await r.text()).map(adapt).filter(c=>c.id&&c.name);
+try{let r=await fetch("data/entreprises.csv?"+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error("CSV "+r.status);companies=parseCSV(await r.text()).map(adapt).filter(c=>c.id&&c.name); companies=[...companies,...customCompanies.map(normalizeCustom)];
 [...new Set(companies.map(c=>c.city).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr")).forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent="📍 "+x;$("city").appendChild(o)});
 [...new Set(companies.map(c=>c.activity).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr")).forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent="🏢 "+x;$("activity").appendChild(o)});
 render()}catch(e){$("count").textContent="Erreur de chargement";$("cards").innerHTML='<div class="empty">Impossible de charger la base. Vérifie que data/entreprises.csv est bien présent.</div>'}}
