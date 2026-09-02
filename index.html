@@ -70,7 +70,7 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid 
 <h2 style="margin-top:0">👤 MON PROFIL ÉLÈVE</h2>
 <p class="muted">Ton carnet personnel de recherche de PFMP. Les données restent sur cet appareil.</p>
 <div class="profile">
-<div><label>Nom et prénom</label><input id="studentName" placeholder="Ex. Quentin Dupont"></div>
+<div><label>Nom</label><input id="studentLastName" placeholder="Ex. DUPONT"></div><div><label>Prénom</label><input id="studentFirstName" placeholder="Ex. Quentin"></div>
 <div><label>Classe</label><input id="studentClass" placeholder="Ex. 2MRC"></div>
 </div>
 <div class="form-actions"><button class="btn primary" id="saveProfile">💾 Enregistrer mon profil</button><button class="btn" id="exportXlsx">📊 Télécharger Excel</button></div>
@@ -99,13 +99,22 @@ let companies=[],favorites=[],favMode=false,map=null,layer=null,userMarker=null;
 let follow={}; let profile={name:"",className:""}; let customCompanies=[];
 try{favorites=JSON.parse(localStorage.getItem("pfmp-favorites")||"[]")}catch(e){}
 try{follow=JSON.parse(localStorage.getItem("pfmp-follow")||"{}")}catch(e){}
-try{profile=JSON.parse(localStorage.getItem("pfmp-profile")||'{"name":"","className":""}')}catch(e){} try{customCompanies=JSON.parse(localStorage.getItem("pfmp-custom-companies")||"[]")}catch(e){}
+try{
+profile=JSON.parse(localStorage.getItem("pfmp-profile")||'{"name":"","className":""}');
+if(!profile.firstName && !profile.lastName && profile.name){
+  let parts=String(profile.name).trim().split(/\s+/);
+  profile.firstName=parts.shift()||"";
+  profile.lastName=parts.join(" ");
+}
+}catch(e){} try{customCompanies=JSON.parse(localStorage.getItem("pfmp-custom-companies")||"[]")}catch(e){}
 const $=id=>document.getElementById(id);
 const today=()=>new Date().toISOString().slice(0,10);
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function saveFav(){try{localStorage.setItem("pfmp-favorites",JSON.stringify(favorites))}catch(e){}}
 function saveFollow(){try{localStorage.setItem("pfmp-follow",JSON.stringify(follow))}catch(e){}} function saveCustom(){try{localStorage.setItem("pfmp-custom-companies",JSON.stringify(customCompanies))}catch(e){}}
-function saveProfile(){profile={name:$("studentName").value.trim(),className:$("studentClass").value.trim()};try{localStorage.setItem("pfmp-profile",JSON.stringify(profile))}catch(e){};alert("Informations enregistrées.")}
+function saveProfile(){
+profile={lastName:$("studentLastName").value.trim(),firstName:$("studentFirstName").value.trim(),className:$("studentClass").value.trim(),name:[$("studentFirstName").value.trim(),$("studentLastName").value.trim()].filter(Boolean).join(" ")};
+try{localStorage.setItem("pfmp-profile",JSON.stringify(profile))}catch(e){};alert("Informations enregistrées.")}
 function isFav(id){return favorites.includes(id)}
 function toggleFav(id){favorites=isFav(id)?favorites.filter(x=>x!==id):[...favorites,id];saveFav();render();if(map)renderMap()}
 function parseCSV(t){
@@ -200,7 +209,7 @@ else if(/refus/i.test(e.result))f.status="refused";
 else if(e.result||e.note)f.status=f.status==="todo"?"ongoing":f.status;
 saveFollow();closeModal();let c=companies.find(x=>x.id===id);show("followDetailView");renderFollowDetail(c);render()}
 function renderFollow(){
-$("studentName").value=profile.name||"";$("studentClass").value=profile.className||"";
+$("studentLastName").value=profile.lastName||"";$("studentFirstName").value=profile.firstName||"";$("studentClass").value=profile.className||"";
 let ids=Object.keys(follow).filter(id=>follow[id]&&follow[id].active===true&&companies.some(c=>c.id===id));
 let won=ids.filter(id=>follow[id].status==="won").length,ref=ids.filter(id=>follow[id].status==="refused").length,rdv=ids.filter(id=>follow[id].status==="rdv").length,ongo=ids.filter(id=>follow[id].status==="ongoing").length,todo=ids.filter(id=>follow[id].status==="todo").length;
 $("kpis").innerHTML=`<div class="kpi"><b>${ids.length}</b><span>Entreprises suivies</span></div><div class="kpi"><b>${ongo}</b><span>En cours</span></div><div class="kpi"><b>${rdv}</b><span>RDV prévus</span></div><div class="kpi"><b>${won}</b><span>Stages obtenus</span></div><div class="kpi"><b>${ref}</b><span>Refus</span></div><div class="kpi"><b>${todo}</b><span>À contacter</span></div>`;
@@ -218,14 +227,14 @@ function renderMap(){if(!map)return;layer.clearLayers();let b=[];companies.forEa
 function locate(){if(!navigator.geolocation){alert("Géolocalisation indisponible.");return}navigator.geolocation.getCurrentPosition(p=>{let x=[p.coords.latitude,p.coords.longitude];if(userMarker)userMarker.remove();userMarker=L.circleMarker(x,{radius:9}).addTo(map).bindPopup("📍 Vous êtes ici").openPopup();map.setView(x,12)},()=>alert("Autorise la localisation dans ton navigateur."),{enableHighAccuracy:true,timeout:10000})}
 async function cleanupAutoCreatedFollow(){
 try{
+let key="pfmp-follow-cleanup-v44";
+if(localStorage.getItem(key)) return;
 Object.keys(follow).forEach(id=>{
   let f=follow[id];
-  if(!f) return;
-  if(f.active===true) return;
-  if(f.status==="todo" && (!f.events||!f.events.length)){ delete follow[id]; return; }
-  f.active=true;
+  if(f && f.status==="todo" && (!f.events || !f.events.length)) delete follow[id];
 });
 saveFollow();
+localStorage.setItem(key,"1");
 }catch(e){}
 }
 async function load(){
@@ -245,7 +254,7 @@ $("reset").onclick=()=>{$("q").value="";$("city").value="";$("activity").value="
 $("locate").onclick=locate;$("mapAll").onclick=()=>{if(map){let b=companies.filter(c=>c.lat!=null).map(c=>[c.lat,c.lon]);if(b.length)map.fitBounds(b,{padding:[25,25],maxZoom:12})}};
 $("saveProfile").onclick=saveProfile;$("exportXlsx").onclick=exportXlsx;
 $("modalBg").addEventListener("click",e=>{if(e.target===$("modalBg"))closeModal()});
-$("studentName").value=profile.name||"";$("studentClass").value=profile.className||"";
+$("studentLastName").value=profile.lastName||"";$("studentFirstName").value=profile.firstName||"";$("studentClass").value=profile.className||"";
 load();
 </script>
 </body></html>
