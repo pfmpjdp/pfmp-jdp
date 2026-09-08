@@ -58,6 +58,40 @@ main{padding:0 16px 110px;max-width:1080px}
 nav{background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-top:1px solid #e7edf3}nav button.nav-active{color:var(--blue)}
 @media(max-width:699px){.hero{min-height:245px}.hero h2{font-size:40px}.hero-note{font-size:13px;max-width:120px}.home-actions{grid-template-columns:repeat(4,1fr);gap:6px}.home-action{min-height:72px;padding:10px 7px;border-radius:15px}.home-action strong{font-size:11px}.home-action .ico{font-size:22px}.filters{grid-template-columns:1fr 1fr}.filters select:first-child{grid-column:1/-1}.search-title{font-size:16px}.search-count{font-size:10px}.card-actions{grid-template-columns:1fr 1fr}.card-actions a:last-child{grid-column:auto}}
 @media(min-width:700px){.hero{margin-left:-16px;margin-right:-16px}.hero-copy{margin-left:6px}.home-actions{gap:12px}.home-action{min-height:82px}.search-panel{padding:20px}}
+
+/* V6.2 — quick actions + header refinement */
+.quick-actions, .home-actions, .action-grid { 
+  gap: 12px !important;
+}
+.quick-actions button, .home-actions button, .action-grid button {
+  color: #fff !important;
+  border-radius: 22px !important;
+  border: 1px solid rgba(255,255,255,.16) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18) !important;
+}
+.quick-actions svg, .home-actions svg, .action-grid svg {
+  width: 34px !important;
+  height: 34px !important;
+  display: block !important;
+  margin: 0 auto 10px !important;
+}
+.quick-actions span, .home-actions span, .action-grid span {
+  display: block !important;
+  line-height: 1.15 !important;
+}
+.quick-actions button:first-child, .home-actions button:first-child, .action-grid button:first-child {
+  background: linear-gradient(145deg,#1677ff,#075bd6) !important;
+}
+.quick-actions button:nth-child(2), .home-actions button:nth-child(2), .action-grid button:nth-child(2) {
+  background: #17202a !important;
+}
+.quick-actions button:nth-child(3), .home-actions button:nth-child(3), .action-grid button:nth-child(3) {
+  background: #171a30 !important;
+}
+.quick-actions button:nth-child(4), .home-actions button:nth-child(4), .action-grid button:nth-child(4) {
+  background: #102a28 !important;
+}
+
 </style>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
@@ -130,7 +164,7 @@ nav button{color:#91a5b8}nav button.nav-active{color:#4b96ff}
 <div id="cards" class="grid"><div class="loading">Chargement…</div></div>
 </section>
 
-<section id="mapView" class="view"><div class="screen-head"><button class="home-return" onclick="show('companiesView')">← Accueil</button><h2>🗺️ Carte</h2></div><div class="map-tools"><button class="mapbtn" id="locate">📍 Me localiser</button><button class="mapbtn" id="mapAll">🌍 Toutes les entreprises</button></div><div id="map"></div></section>
+<section id="mapView" class="view"><div class="screen-head"><button class="home-return" onclick="show('companiesView')">← Accueil</button><h2><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-12A7 7 0 0 0 5 9c0 5.9 7 12 7 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="9" r="2.4" fill="currentColor"/></svg><span>Carte</span></h2></div><div class="map-tools"><button class="mapbtn" id="locate">📍 Me localiser</button><button class="mapbtn" id="mapAll">🌍 Toutes les entreprises</button></div><div id="map"></div></section>
 
 <section id="followView" class="view"><div class="screen-head"><button class="home-return" onclick="show('companiesView')">← Accueil</button></div>
 <div class="summary-card">
@@ -156,8 +190,8 @@ nav button{color:#91a5b8}nav button.nav-active{color:#4b96ff}
 
 <nav>
 <button id="homeBtn" class="nav-active">🏢 Entreprises</button>
-<button id="mapBtn">🗺️ Carte</button>
-<button id="followBtn">📋 Mes démarches</button>
+<button id="mapBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s7-6.1 7-12A7 7 0 0 0 5 9c0 5.9 7 12 7 12z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="9" r="2.4" fill="currentColor"/></svg><span>Carte</span></button>
+<button id="followBtn"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="1.8" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8.5 8h7M8.5 12h7M8.5 16h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Mes démarches</span></button>
 <button id="favoritesBtn">⭐ Favoris</button>
 </nav>
 
