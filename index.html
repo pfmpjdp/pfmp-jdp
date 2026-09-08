@@ -43,23 +43,42 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid 
 .home-return{border:0;background:none;color:var(--ink);font-weight:800;font:inherit;cursor:pointer;padding:6px 0}
 .new-origin{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-top:6px}
 .origin-new{color:var(--blue)}
+
+/* V6 — nouveau design moderne */
+:root{--blue:#146ff5;--deep:#081522;--deep2:#101f2d;--softblue:#eaf2ff;--ink:#0d1b2a;--muted:#66788a;--bg:#f4f7fb;--card:#fff;--line:#e2e8ef}
+body{background:var(--bg);color:var(--ink)}
+header{background:#fff;border-bottom:0;padding:12px 18px;position:relative;box-shadow:0 1px 0 rgba(13,27,42,.04)}
+.brand{display:flex!important;align-items:center;gap:11px}.school-logo{width:54px;height:54px;object-fit:contain;border-radius:8px}.brand h1{font-size:20px;letter-spacing:-.5px}.brand h1 span{color:var(--blue)}.brand p{font-size:11px;margin-top:2px}
+main{padding:0 16px 110px;max-width:1080px}
+.hero{margin:0 -16px;padding:28px 22px 30px;min-height:250px;background:linear-gradient(135deg,#071421 0%,#10263b 62%,#173f68 100%);color:#fff;border-radius:0 0 28px 28px;display:flex;justify-content:space-between;align-items:flex-end;position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-80px;top:-70px;background:rgba(20,111,245,.18)}.hero-copy{position:relative;z-index:1}.hero-kicker{font-size:10px;letter-spacing:1.2px;font-weight:800;opacity:.7;margin-bottom:12px}.hero h2{font-size:46px;line-height:.92;letter-spacing:-2.2px;margin:0 0 14px}.hero h2 span,.hero p b{color:#2e82ff}.hero p{color:#dbe6f1;font-size:17px;line-height:1.35;margin:0}.hero-note{position:relative;z-index:1;text-align:right;font-size:16px;line-height:1.15;font-weight:700;font-style:italic;color:#fff;opacity:.95}.hero-note b{color:#58a0ff}
+.home-actions{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:-18px 0 16px;position:relative;z-index:3}.home-action{min-height:78px;border:0;border-radius:18px;padding:12px 10px;box-shadow:0 8px 22px rgba(13,27,42,.12);display:flex;flex-direction:column;justify-content:center;align-items:flex-start}.home-action .ico{font-size:25px;line-height:1}.home-action strong{font-size:13px;margin-top:7px}.home-action span:not(.ico){display:none}.action-search{background:#55a7ff;color:#071421}.action-fav{background:#fff2a8;color:#111}.action-follow{background:#cdb9ff;color:#17112a}.action-map{background:#8ce8c1;color:#0b2118}
+.search-panel{background:#fff;border-radius:22px;padding:16px;box-shadow:0 5px 24px rgba(13,27,42,.08);margin-bottom:14px}.search-title{display:flex;align-items:center;gap:8px;font-size:17px;margin-bottom:11px}.search-title>span:first-child{font-size:24px}.search-count{margin-left:auto;font-size:11px;color:var(--muted);font-weight:700}.search{border:1px solid #dbe4ed;border-radius:14px;padding:7px 11px;background:#f8fafc}.search input{font-size:16px;padding:7px 2px}.filters{grid-template-columns:1.25fr 1fr 1fr;gap:8px;margin-top:8px}.filters select{border:1px solid #dbe4ed;background:#fff;padding:11px 10px}
+.tools{margin:9px 0}.status{margin:13px 2px 9px}.card{border:0;border-radius:18px;box-shadow:0 4px 16px rgba(13,27,42,.07);padding:14px}.logo{border:0;background:#f7f9fc}.name{font-size:16px}.activity{color:var(--blue)}.sector-line{font-size:11px;color:#738394;margin-top:4px}.card-actions{grid-template-columns:1.1fr 1fr 1fr}.primary{background:var(--blue)!important;border-color:var(--blue)!important}.card-actions button,.card-actions a{border-color:#e1e7ee}
+.detail-card{border:0;box-shadow:0 6px 22px rgba(13,27,42,.08);border-radius:24px}.detail-card h2{font-size:28px}.detail-card .actions a.primary{background:var(--blue)!important}.back,.home-return{color:var(--blue)}
+nav{background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-top:1px solid #e7edf3}nav button.nav-active{color:var(--blue)}
+@media(max-width:699px){.hero{min-height:245px}.hero h2{font-size:40px}.hero-note{font-size:13px;max-width:120px}.home-actions{grid-template-columns:repeat(4,1fr);gap:6px}.home-action{min-height:72px;padding:10px 7px;border-radius:15px}.home-action strong{font-size:11px}.home-action .ico{font-size:22px}.filters{grid-template-columns:1fr 1fr}.filters select:first-child{grid-column:1/-1}.search-title{font-size:16px}.search-count{font-size:10px}.card-actions{grid-template-columns:1fr 1fr}.card-actions a:last-child{grid-column:auto}}
+@media(min-width:700px){.hero{margin-left:-16px;margin-right:-16px}.hero-copy{margin-left:6px}.home-actions{gap:12px}.home-action{min-height:82px}.search-panel{padding:20px}}
 </style>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 </head>
 <body>
-<header><div><h1>PFMP JDP</h1><p>Recherche · Organisation · Suivi</p></div></header>
+<header><div class="brand"><img src="logo-jdp.png" alt="Lycée JDP Jean de Prades" class="school-logo"><div><h1>PFMP JDP <span>2026</span></h1><p>Recherche · Organisation · Suivi</p></div></div></header>
 <main>
 <section id="companiesView" class="view active">
-<div class="hero"><h2>Trouve ton entreprise.<br>Organise ta recherche.<br>Décroche ta PFMP.</h2><p>Recherche une entreprise, garde tes favoris et suis chacune de tes démarches.</p></div>
-<div class="home-actions">
-<button class="home-action" onclick="$('q').focus()"><span class="ico">🔎</span><strong>Rechercher</strong><span>Trouver une entreprise</span></button>
-<button class="home-action" onclick="$('favoritesBtn').click()"><span class="ico">⭐</span><strong>Mes favoris</strong><span>Mes entreprises sélectionnées</span></button>
-<button class="home-action" onclick="$('followBtn').click()"><span class="ico">📋</span><strong>Ma recherche</strong><span>Mes démarches</span></button>
-<button class="home-action" onclick="$('mapBtn').click()"><span class="ico">🗺️</span><strong>Carte</strong><span>Les entreprises autour de moi</span></button>
+<div class="hero">
+  <div class="hero-copy"><div class="hero-kicker">COMMERCE · VENTE · RELATION CLIENT</div><h2>Trouve ton<br>entreprise<span>.</span></h2><p>Organise ta recherche.<br><b>Décroche ta PFMP.</b></p></div>
+  <div class="hero-note">Ton stage<br>Ton avenir<br><b>C'est maintenant !</b></div>
 </div>
-<div class="search"><input id="q" placeholder="🔎 Nom, activité, ville, code postal…" autocomplete="off"></div>
-<div class="filters"><select id="city"><option value="">📍 Toutes les villes</option></select><select id="activity"><option value="">🏢 Tous les secteurs</option></select></div>
+<div class="home-actions">
+<button class="home-action action-search" onclick="$('q').focus()"><span class="ico">⌕</span><strong>Rechercher</strong></button>
+<button class="home-action action-fav" onclick="$('favoritesBtn').click()"><span class="ico">★</span><strong>Mes favoris</strong></button>
+<button class="home-action action-follow" onclick="$('followBtn').click()"><span class="ico">▤</span><strong>Mes démarches</strong></button>
+<button class="home-action action-map" onclick="$('mapBtn').click()"><span class="ico">⌖</span><strong>Carte</strong></button>
+</div>
+<div class="search-panel"><div class="search-title"><span>⌕</span><strong>Rechercher une entreprise</strong><span class="search-count" id="searchCount">257 entreprises</span></div>
+<div class="search"><input id="q" placeholder="Nom, activité, ville, code postal…" autocomplete="off"></div>
+<div class="filters"><select id="sector"><option value="">📍 Tous les secteurs géographiques</option></select><select id="city"><option value="">🏙️ Toutes les villes</option></select><select id="activity"><option value="">💼 Toutes les activités</option></select></div></div>
 <div class="tools"><button class="pill" id="favOnly">☆ Favoris uniquement</button><select id="sort" style="max-width:220px"><option value="name">Trier par nom</option><option value="city">Trier par ville</option><option value="activity">Trier par secteur</option></select></div>
 <div class="status"><span id="count">Chargement…</span><button class="pill" id="reset">Réinitialiser</button></div>
 <div id="cards" class="grid"><div class="loading">Chargement…</div></div>
@@ -77,7 +96,7 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid 
 </div>
 <div class="form-actions"><button class="btn primary" id="saveProfile">💾 Enregistrer mon profil</button><button class="btn" id="exportXlsx">📊 Télécharger Excel</button></div>
 </div>
-<div class="summary-card" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2 style="margin:0">📊 MA RECHERCHE DE PFMP</h2><p class="muted small" style="margin:5px 0 0">J'ai démarché une entreprise qui n'est pas dans l'application</p></div><button class="btn primary" onclick="openNewCompanyModal()">＋ Ajouter une entreprise</button></div><div class="summary-card"><h2 style="margin-top:0">📈 Mon bilan</h2><div class="kpis" id="kpis"></div></div>
+<div class="summary-card" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2 style="margin:0">📊 MES DÉMARCHES DE PFMP</h2><p class="muted small" style="margin:5px 0 0">J'ai démarché une entreprise qui n'est pas dans l'application</p></div><button class="btn primary" onclick="openNewCompanyModal()">＋ Ajouter une entreprise</button></div><div class="summary-card"><h2 style="margin-top:0">📈 Mon bilan</h2><div class="kpis" id="kpis"></div></div>
 <div class="summary-card"><div id="followList"></div></div>
 <div class="summary-card" style="text-align:center;margin-bottom:30px">
 <button class="btn danger" onclick="resetAllFollow()">🗑️ Réinitialiser ma recherche</button>
@@ -92,7 +111,7 @@ nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid 
 <nav>
 <button id="homeBtn" class="nav-active">🏢 Entreprises</button>
 <button id="mapBtn">🗺️ Carte</button>
-<button id="followBtn">📋 Mon suivi</button>
+<button id="followBtn">📋 Mes démarches</button>
 <button id="favoritesBtn">⭐ Favoris</button>
 </nav>
 
@@ -135,25 +154,25 @@ if(cell!==""||row.length){row.push(cell);if(row.some(v=>v.trim()))rows.push(row)
 let h=(rows.shift()||[]).map(x=>x.trim());return rows.map(r=>{let o={};h.forEach((x,i)=>o[x]=(r[i]||"").trim());return o})
 }
 function adapt(r){let m=String(r.Coordinates||"").match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/);
-return{id:r.ID,name:r["Raison Sociale"],activity:r["Activité"],address:r.Adresse,city:r["Secteur géographique"],postal:r["CODE POSTAL"],responsible:r["Responsable de l'entreprise"],phone:r["Téléphone entreprise"],email:r.Mail,website:r["Site internet de l'entreprise"],logo:r.Logo,lat:m?+m[1]:null,lon:m?+m[2]:null,origin:"Base officielle"}}
-function normalizeCustom(c){return {id:c.id,name:c.name,activity:c.activity||"",address:c.address||"",city:c.city||"",postal:c.postal||"",responsible:c.responsible||"",phone:c.phone||"",email:c.email||"",website:c.website||"",logo:"",lat:null,lon:null,origin:"Ajoutée par l'élève"}} function statusLabel(s){return({todo:"⚪ À contacter",ongoing:"🟡 Démarche en cours",rdv:"🔵 RDV prévu",won:"🟢 Stage obtenu",refused:"🔴 Refus",closed:"⚫ Entreprise fermée",abandoned:"⚫ Abandonnée"})[s]||"⚪ À contacter"}
+return{id:r.ID,name:r["Raison Sociale"],activity:r["Activité"],address:r.Adresse,city:r["Localisation"],sector:r["Secteur géographique"],postal:r["CODE POSTAL"],responsible:r["Responsable de l'entreprise"],phone:r["Téléphone entreprise"],email:r.Mail,website:r["Site internet de l'entreprise"],logo:r.Logo,lat:m?+m[1]:null,lon:m?+m[2]:null,origin:"Base officielle"}}
+function normalizeCustom(c){return {id:c.id,name:c.name,activity:c.activity||"",address:c.address||"",city:c.city||"",postal:c.postal||"",responsible:c.responsible||"",phone:c.phone||"",email:c.email||"",website:c.website||"",logo:"",lat:null,lon:null,sector:c.sector||"",origin:"Ajoutée par l'élève"}} function statusLabel(s){return({todo:"⚪ À contacter",ongoing:"🟡 Démarche en cours",rdv:"🔵 RDV prévu",won:"🟢 Stage obtenu",refused:"🔴 Refus",closed:"⚫ Entreprise fermée",abandoned:"⚫ Abandonnée"})[s]||"⚪ À contacter"}
 function statusClass(s){return s==="won"?"green":(s==="refused"||s==="closed")?"red":s==="rdv"?"blue":""}
 function getFollow(id){if(!follow[id])follow[id]={active:true,status:"todo",refusalReason:"",events:[]};return follow[id]}
 function logo(c){return c.logo?`<img class="logo" src="${esc(c.logo)}" alt="" loading="lazy" onerror="this.style.display='none'">`:""}
 function filtered(){
-let q=$("q").value.trim().toLowerCase(),ci=$("city").value,ac=$("activity").value;
-let a=companies.filter(c=>(!q||[c.name,c.activity,c.address,c.city,c.postal].join(" ").toLowerCase().includes(q))&&(!ci||c.city===ci)&&(!ac||c.activity===ac)&&(!favMode||isFav(c.id)));
+let q=$("q").value.trim().toLowerCase(),ci=$("city").value,se=$("sector").value,ac=$("activity").value;
+let a=companies.filter(c=>(!q||[c.name,c.activity,c.address,c.city,c.sector,c.postal].join(" ").toLowerCase().includes(q))&&(!ci||c.city===ci)&&(!se||c.sector===se)&&(!ac||c.activity===ac)&&(!favMode||isFav(c.id)));
 let k=$("sort").value;a.sort((x,y)=>String((k==="name"?x.name:k==="city"?x.city:x.activity)||"").localeCompare(String((k==="name"?y.name:k==="city"?y.city:y.activity)||""),"fr"));return a}
 function render(){
-let a=filtered();$("count").textContent=`${a.length} entreprise${a.length>1?"s":""}`;
+let a=filtered();$("count").textContent=`${a.length} entreprise${a.length>1?"s":""}`;$("searchCount").textContent=`${a.length} entreprise${a.length>1?"s":""}`;
 $("cards").innerHTML=a.length?a.map(c=>{let f=(follow[c.id]&&follow[c.id].active===true)?follow[c.id]:null, st=f?statusLabel(f.status):"";
-return `<article class="card"><div class="top"><div class="identity">${logo(c)}<div><div class="name">${esc(c.name)}</div><div class="activity">${esc(c.activity)}</div><div class="place">📍 ${esc(c.city)} ${esc(c.postal)}</div>${c.origin==="Ajoutée par l'élève"?`<div class="new-origin origin-new">✏️ Ajoutée par toi</div>`:""}${f?`<div class="small" style="margin-top:6px"><span class="badge ${statusClass(f.status)}">${st}</span></div>`:""}</div></div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div><div class="card-actions"><button class="primary" onclick="openDetail('${esc(c.id)}')">Voir la fiche</button><button onclick="openFollow('${esc(c.id)}')">${f?"📋 Ma recherche":"➕ Ajouter à ma recherche"}</button>${c.email?`<a href="mailto:${esc(c.email)}">✉️ E-mail</a>`:c.phone?`<a href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}</div></article>`}).join(""):'<div class="empty">Aucune entreprise ne correspond.</div>'}
+return `<article class="card"><div class="top"><div class="identity">${logo(c)}<div><div class="name">${esc(c.name)}</div><div class="activity">${esc(c.activity)}</div><div class="place">📍 ${esc(c.city||c.sector)} ${esc(c.postal)}</div>${c.sector?`<div class="sector-line">${esc(c.sector)}</div>`:""}${c.origin==="Ajoutée par l'élève"?`<div class="new-origin origin-new">✏️ Ajoutée par toi</div>`:""}${f?`<div class="small" style="margin-top:6px"><span class="badge ${statusClass(f.status)}">${st}</span></div>`:""}</div></div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div><div class="card-actions"><button class="primary" onclick="openDetail('${esc(c.id)}')">Voir la fiche</button><button onclick="openFollow('${esc(c.id)}')">${f?"📋 Ma recherche":"➕ Ajouter à ma recherche"}</button>${c.email?`<a href="mailto:${esc(c.email)}">✉️ E-mail</a>`:c.phone?`<a href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}</div></article>`}).join(""):'<div class="empty">Aucune entreprise ne correspond.</div>'}
 function openDetail(id){let c=companies.find(x=>x.id===id);if(!c)return;show("detailView");
 let maps=c.lat!=null&&c.lon!=null?`https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lon}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((c.address||"")+" "+(c.city||""))}`;
 let web=c.website?`<a target="_blank" rel="noopener" href="${esc(/^https?:\/\//i.test(c.website)?c.website:"https://"+c.website)}">🌐 Site internet</a>`:"";
-$("detail").innerHTML=`<div class="detail-card"><div class="top"><div class="identity">${logo(c)}<div><h2>${esc(c.name)}</h2><div class="activity">${esc(c.activity)}</div></div></div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}');openDetail('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div>
+$("detail").innerHTML=`<div class="detail-card"><div class="top"><div class="identity">${logo(c)}<div><h2>${esc(c.name)}</h2><div class="activity">${esc(c.activity)}</div>${c.sector?`<div class="sector-line">${esc(c.sector)}</div>`:""}</div></div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}');openDetail('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div>
 <div class="label">Adresse</div><div class="value">${esc(c.address)}<br>${esc(c.postal)} ${esc(c.city)}</div><div class="label">Responsable</div><div class="value">${esc(c.responsible)||"Non renseigné"}</div><div class="label">Téléphone</div><div class="value">${c.phone?`<a href="tel:${esc(c.phone)}">${esc(c.phone)}</a>`:"Non renseigné"}</div><div class="label">E-mail</div><div class="value">${c.email?`<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`:"Non renseigné"}</div>
-<div class="actions">${c.phone?`<a class="primary" href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}${c.email?`<a class="primary" href="mailto:${esc(c.email)}">✉️ Envoyer un e-mail</a>`:""}<a href="${maps}" target="_blank" rel="noopener">📍 Itinéraire</a>${web}<button onclick="openFollow('${esc(c.id)}')">📋 Suivre ma démarche</button></div></div>`}
+<div class="actions">${c.phone?`<a class="primary" href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}${c.email?`<a class="primary" href="mailto:${esc(c.email)}">✉️ Envoyer un e-mail</a>`:""}<a href="${maps}" target="_blank" rel="noopener">📍 Itinéraire</a>${web}<button onclick="openFollow('${esc(c.id)}')">📋 Ajouter à mes démarches</button></div></div>`}
 function openFollow(id){let c=companies.find(x=>x.id===id);if(!c)return;show("followDetailView");renderFollowDetail(c)} 
 function startFollow(id){let c=companies.find(x=>x.id===id);if(!c)return;follow[id]={active:true,status:"todo",refusalReason:"",events:[]};saveFollow();renderFollowDetail(c);render()}
 function renderFollowDetail(c){
@@ -265,7 +284,8 @@ localStorage.setItem(key,"1");
 async function load(){
 cleanupAutoCreatedFollow();
 try{let r=await fetch("data/entreprises.csv?"+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error("CSV "+r.status);companies=parseCSV(await r.text()).map(adapt).filter(c=>c.id&&c.name); companies=[...companies,...customCompanies.map(normalizeCustom)];
-[...new Set(companies.map(c=>c.city).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr")).forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent="📍 "+x;$("city").appendChild(o)});
+[...new Set(companies.map(c=>c.sector).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr")).forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent="📍 "+x;$("sector").appendChild(o)});
+[...new Set(companies.map(c=>c.city).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr")).forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent="🏙️ "+x;$("city").appendChild(o)});
 [...new Set(companies.map(c=>c.activity).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr")).forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent="🏢 "+x;$("activity").appendChild(o)});
 render()}catch(e){$("count").textContent="Erreur de chargement";$("cards").innerHTML='<div class="empty">Impossible de charger la base. Vérifie que data/entreprises.csv est bien présent.</div>'}}
 $("homeBtn").onclick=()=>{favMode=false;$("favOnly").classList.remove("active");show("companiesView");render()};
@@ -274,8 +294,8 @@ $("followBtn").onclick=()=>show("followView");
 $("favoritesBtn").onclick=()=>{favMode=true;$("favOnly").classList.add("active");show("companiesView");render()};
 $("back").onclick=()=>show("companiesView");$("backFollow").onclick=()=>show("followView");
 $("favOnly").onclick=()=>{favMode=!favMode;$("favOnly").classList.toggle("active",favMode);$("favOnly").textContent=favMode?"★ Tous les résultats":"☆ Favoris uniquement";render()};
-$("reset").onclick=()=>{$("q").value="";$("city").value="";$("activity").value="";$("sort").value="name";favMode=false;$("favOnly").classList.remove("active");$("favOnly").textContent="☆ Favoris uniquement";render()};
-["q","city","activity","sort"].forEach(id=>$(id).addEventListener("input",()=>{render();if(map)renderMap()}));
+$("reset").onclick=()=>{$("q").value="";$("city").value="";$("sector").value="";$("activity").value="";$("sort").value="name";favMode=false;$("favOnly").classList.remove("active");$("favOnly").textContent="☆ Favoris uniquement";render()};
+["q","city","sector","activity","sort"].forEach(id=>$(id).addEventListener("input",()=>{render();if(map)renderMap()}));
 $("locate").onclick=locate;$("mapAll").onclick=()=>{if(map){let b=companies.filter(c=>c.lat!=null).map(c=>[c.lat,c.lon]);if(b.length)map.fitBounds(b,{padding:[25,25],maxZoom:12})}};
 $("saveProfile").onclick=saveProfile;$("exportXlsx").onclick=exportXlsx;
 $("modalBg").addEventListener("click",e=>{if(e.target===$("modalBg"))closeModal()});
