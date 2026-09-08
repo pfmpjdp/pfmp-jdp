@@ -61,6 +61,52 @@ nav{background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-top:1px s
 </style>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+
+<style>
+/* V6.1 — contraste renforcé, actions premium */
+:root{--blue:#1677ff;--deep:#06121e;--deep2:#0c1c2b;--surface:#0c1b2a;--surface2:#102438;--darkline:#29445d;--darkmuted:#a9bacb}
+body{background:#06121e;color:#f7fbff}
+header{background:#071522;color:#fff;border-bottom:1px solid #1b344b;box-shadow:none}
+.brand h1{color:#fff}.brand p{color:#91a6ba}
+main{background:#06121e}
+.hero{background:linear-gradient(135deg,#06111c 0%,#0a1d2e 60%,#123b69 100%);border:1px solid #18354d;box-shadow:0 12px 35px rgba(0,0,0,.28)}
+.hero:after{background:rgba(22,119,255,.20)}
+.home-actions{margin-top:-14px}
+.home-action{border:1px solid #29445d!important;box-shadow:0 8px 22px rgba(0,0,0,.28);color:#fff!important;background:#0d2031!important;position:relative;overflow:hidden}
+.home-action:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.07),transparent 55%);pointer-events:none}
+.action-search{background:linear-gradient(135deg,#0877ff,#135bcf)!important;border-color:#2487ff!important}
+.action-fav{background:linear-gradient(135deg,#302f20,#171d1d)!important;border-color:#6e6032!important}
+.action-follow{background:linear-gradient(135deg,#30264b,#191b30)!important;border-color:#674b9b!important}
+.action-map{background:linear-gradient(135deg,#123d35,#102722)!important;border-color:#1c765e!important}
+.home-action .ico{font-size:27px;font-weight:400;color:#fff}
+.home-action strong{font-size:13px;color:#fff;letter-spacing:-.1px}
+.search-panel,.card,.detail-card,.follow-card,.summary-card{background:linear-gradient(145deg,#0b1a29,#0d2031)!important;color:#f7fbff;border:1px solid #29445d!important;box-shadow:0 8px 24px rgba(0,0,0,.24)!important}
+.search-title{color:#fff}.search-count{color:#9fb2c5}
+.search{background:#0f2537;border-color:#35536d}
+.search input{color:#fff}.search input::placeholder{color:#91a5b8}
+.filters select,.field input,.field select,.field textarea,.profile input{background:#0f2537!important;color:#fff!important;border-color:#35536d!important}
+select option{background:#0f2537;color:#fff}
+.tools .pill,.mapbtn{background:#0f2537;color:#fff;border-color:#35536d}
+.pill.active{background:var(--blue);border-color:var(--blue)}
+.status{color:#9fb2c5}.status b{color:#fff}
+.card .name,.detail-card h2,.follow-head h2{color:#fff}.activity{color:#4f9aff}.place,.sector-line,.muted{color:#9fb2c5!important}
+.logo{background:#fff!important;border:1px solid #29445d!important}
+.star{color:#a9bacb}.star.on{color:#ffd84d}
+.card-actions button,.card-actions a,.actions a,.actions button,.btn{background:#102438!important;color:#fff!important;border-color:#35536d!important}
+.card-actions .primary,.actions .primary,.btn.primary{background:linear-gradient(135deg,#1677ff,#1260db)!important;border-color:#1677ff!important;color:#fff!important}
+.card-actions button:hover,.card-actions a:hover,.actions a:hover,.actions button:hover{border-color:#4f9aff}
+.badge{background:#1c2e3e;color:#dbe8f4}.badge.green{background:#123c2c;color:#79e1ae}.badge.red{background:#442324;color:#ff9a9a}.badge.blue{background:#153a61;color:#83bbff}
+.follow-state,.profile,.kpi{background:#0f2537!important;border-color:#29445d!important;color:#fff}
+.progress span{background:#29445d}.progress span.done{background:var(--blue)}
+.label,.field label{color:#8ea4b8}.value{color:#f3f8fc}
+.empty,.loading{background:#0b1a29;border-color:#35536d;color:#9fb2c5}
+.back,.home-return{color:#5aa0ff}
+nav{background:rgba(5,16,27,.97);border-top:1px solid #29445d;box-shadow:0 -8px 24px rgba(0,0,0,.22)}
+nav button{color:#91a5b8}nav button.nav-active{color:#4b96ff}
+.modal{background:#0b1a29;color:#fff}.modal input,.modal select,.modal textarea{background:#0f2537!important;color:#fff!important;border-color:#35536d!important}
+@media(max-width:699px){.home-actions{gap:7px}.home-action{min-height:76px;padding:10px 7px}.home-action .ico{font-size:23px}.home-action strong{font-size:10.5px}}
+</style>
+
 </head>
 <body>
 <header><div class="brand"><img src="logo-jdp.png" alt="Lycée JDP Jean de Prades" class="school-logo"><div><h1>PFMP JDP <span>2026</span></h1><p>Recherche · Organisation · Suivi</p></div></div></header>
