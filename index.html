@@ -372,6 +372,102 @@ main{padding-top:0!important}
   .company-actions button,.company-actions a{font-size:13px!important;min-height:44px!important}
 }
 
+
+/* V6.9 — esthétique des fiches validée */
+.company-card{
+  background:#0c1d2d!important;
+  border:1px solid #274b6b!important;
+  border-radius:22px!important;
+  padding:12px!important;
+  box-shadow:0 8px 22px rgba(0,0,0,.16)!important;
+}
+.company-name-row .name{
+  color:#f7fbff!important;
+  font-weight:850!important;
+}
+.company-name-row .star{
+  color:#f3c91b!important;
+  text-shadow:0 0 1px rgba(243,201,27,.4)!important;
+}
+.company-name-row .star:not(.on){color:#f3c91b!important}
+.activity-pill{
+  background:#e8f2ff!important;
+  color:#17324d!important;
+}
+.place{color:#b9c9d8!important}
+.place-dot{color:#ff5b62!important;font-size:13px!important}
+.company-actions{
+  grid-template-columns:1.08fr 1fr .62fr!important;
+  gap:8px!important;
+}
+.company-actions button,.company-actions a{
+  min-width:0!important;
+  min-height:44px!important;
+  padding:6px 7px!important;
+  border-radius:12px!important;
+  border:1px solid #315a7c!important;
+  background:#10283d!important;
+  color:#f4f8fc!important;
+  font-size:12px!important;
+  font-weight:750!important;
+  line-height:1.05!important;
+  white-space:normal!important;
+}
+.company-actions .primary{
+  background:#0878f9!important;
+  border-color:#0878f9!important;
+  color:#fff!important;
+}
+.company-actions button:nth-child(2){
+  display:flex!important;
+  flex-direction:row!important;
+  gap:6px!important;
+}
+.company-actions .card-call{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-decoration:none!important;
+}
+.action-svg{
+  width:24px!important;height:24px!important;
+  min-width:24px!important;max-width:24px!important;
+  min-height:24px!important;max-height:24px!important;
+  flex:0 0 24px!important;
+  display:block!important;
+}
+.phone-svg{color:#4aa3ff!important}
+.plus-svg{width:25px!important;height:25px!important}
+.company-actions .primary .action-svg{color:#fff!important}
+.company-actions .card-call .action-svg{width:27px!important;height:27px!important;min-width:27px!important;min-height:27px!important}
+@media(max-width:699px){
+  .company-main{grid-template-columns:39% 1fr!important;gap:12px!important}
+  .company-visual-wrap{height:108px!important}
+  .company-name-row .name{font-size:17px!important;line-height:1.12!important}
+  .company-name-row .star{font-size:28px!important;width:30px!important;height:30px!important}
+  .activity-pill{font-size:11px!important;padding:5px 9px!important}
+  .place{font-size:13px!important;margin-top:8px!important}
+  .company-actions{grid-template-columns:1.05fr 1fr .48fr!important;gap:6px!important}
+  .company-actions button,.company-actions a{font-size:10.5px!important;min-height:42px!important;padding:6px 4px!important}
+  .company-actions button:nth-child(2){gap:4px!important}
+  .company-actions .action-svg{width:21px!important;height:21px!important;min-width:21px!important;min-height:21px!important}
+  .company-actions .card-call .action-svg{width:24px!important;height:24px!important;min-width:24px!important;min-height:24px!important}
+}
+@media(max-width:390px){
+  .company-main{grid-template-columns:37% 1fr!important;gap:10px!important}
+  .company-visual-wrap{height:96px!important}
+  .company-name-row .name{font-size:16px!important}
+  .company-actions{grid-template-columns:1.03fr 1fr .44fr!important}
+  .company-actions button,.company-actions a{font-size:10px!important}
+}
+@media(min-width:700px){
+  .company-main{grid-template-columns:270px 1fr!important;gap:18px!important}
+  .company-visual-wrap{height:128px!important}
+  .company-name-row .name{font-size:21px!important}
+  .company-actions{grid-template-columns:1.08fr 1fr .62fr!important;gap:9px!important}
+  .company-actions button,.company-actions a{font-size:13px!important;min-height:44px!important}
+}
+
 </style>
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=6-4">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=6-4">
@@ -529,9 +625,9 @@ let a=filtered();$("count").textContent=`${a.length} entreprise${a.length>1?"s":
 $("cards").innerHTML=a.length?a.map(c=>{
 let f=(follow[c.id]&&follow[c.id].active===true)?follow[c.id]:null, st=f?statusLabel(f.status):"";
 let visual=c.logo?`<img class="company-visual" src="${esc(c.logo)}" alt="" loading="lazy" onerror="this.style.display='none'">`:`<div class="company-visual company-visual-empty"><span>🏢</span></div>`;
-let followAction=f?"📋 Ma recherche":"＋ Ajouter à ma recherche";
-let callAction=c.phone?`<a href="tel:${esc(c.phone)}" class="card-call">☎️ Appeler</a>`:`<span class="card-action-empty"></span>`;
-return `<article class="card company-card"><div class="company-main"><div class="company-visual-wrap">${visual}</div><div class="company-info"><div class="company-name-row"><div class="name">${esc(c.name)}</div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div>${c.activity?`<div class="activity-pill">${esc(c.activity)}</div>`:""}${c.city||c.postal?`<div class="place">📍 ${esc(c.city)} ${esc(c.postal)}</div>`:""}${c.origin==="Ajoutée par l'élève"?`<div class="new-origin origin-new">✏️ Ajoutée par toi</div>`:""}${f?`<div class="small company-status"><span class="badge ${statusClass(f.status)}">${st}</span></div>`:""}</div></div><div class="card-actions company-actions"><button class="primary" onclick="openDetail('${esc(c.id)}')">▣&nbsp; Voir la fiche</button><button onclick="openFollow('${esc(c.id)}')">${followAction}</button>${callAction}</div></article>`}).join(""):'<div class="empty">Aucune entreprise ne correspond.</div>'}
+let followAction=f?`<svg class="action-svg" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="4" width="12" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 8h6M9 12h6M9 16h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Ma recherche</span>`:`<svg class="action-svg plus-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Ajouter à ma<br>recherche</span>`;
+let callAction=c.phone?`<a href="tel:${esc(c.phone)}" class="card-call"><svg class="action-svg phone-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.1 4.5l2.3 3.1-1.7 2.1c1 2.1 2.6 3.7 4.7 4.7l2.1-1.7 3.1 2.3c.5.4.6 1.1.3 1.6l-1.2 2.1c-.3.5-.8.8-1.4.8-6.8-.2-12.2-5.6-12.4-12.4 0-.6.3-1.1.8-1.4l2.1-1.2c.5-.3 1.2-.2 1.6.3z" fill="currentColor"/></svg></a>`:`<span class="card-action-empty"></span>`;
+return `<article class="card company-card"><div class="company-main"><div class="company-visual-wrap">${visual}</div><div class="company-info"><div class="company-name-row"><div class="name">${esc(c.name)}</div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}')" aria-label="Favori">${isFav(c.id)?"★":"☆"}</button></div>${c.activity?`<div class="activity-pill">${esc(c.activity)}</div>`:""}${c.city||c.postal?`<div class="place"><span class="place-dot">●</span> ${esc(c.city)} ${esc(c.postal)}</div>`:""}${c.origin==="Ajoutée par l'élève"?`<div class="new-origin origin-new">✏️ Ajoutée par toi</div>`:""}${f?`<div class="small company-status"><span class="badge ${statusClass(f.status)}">${st}</span></div>`:""}</div></div><div class="card-actions company-actions"><button class="primary" onclick="openDetail('${esc(c.id)}')"><svg class="action-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h9l4 4V20.5H6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14.5 3.5v4h4M9 11h6M9 15h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Voir la fiche</span></button><button onclick="openFollow('${esc(c.id)}')">${followAction}</button>${callAction}</div></article>`}).join(""):'<div class="empty">Aucune entreprise ne correspond.</div>'}
 function openDetail(id){let c=companies.find(x=>x.id===id);if(!c)return;show("detailView");
 let maps=c.lat!=null&&c.lon!=null?`https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lon}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((c.address||"")+" "+(c.city||""))}`;
 let web=c.website?`<a target="_blank" rel="noopener" href="${esc(/^https?:\/\//i.test(c.website)?c.website:"https://"+c.website)}">🌐 Site internet</a>`:"";
