@@ -315,6 +315,63 @@ main{padding-top:0!important}
   .follow-intro .btn{font-size:11px!important;padding:9px 10px!important}
 }
 
+
+/* V6.8 — nouveau format des fiches entreprises */
+.company-card{
+  background:#fdfefe!important;border:1px solid #dce6ef!important;
+  border-radius:22px!important;padding:12px!important;
+  box-shadow:0 6px 20px rgba(13,27,42,.09)!important;
+  overflow:hidden!important;
+}
+.company-main{display:grid!important;grid-template-columns:minmax(118px,38%) 1fr!important;gap:14px!important;align-items:center!important}
+.company-visual-wrap{width:100%!important;height:118px!important;border-radius:12px!important;overflow:hidden!important;background:#f3f6f9!important;display:flex!important;align-items:center!important;justify-content:center!important}
+.company-visual{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}
+.company-visual-empty{color:#8da0b2!important;font-size:32px!important}
+.company-info{min-width:0!important}
+.company-name-row{display:flex!important;align-items:flex-start!important;gap:8px!important}
+.company-name-row .name{flex:1!important;min-width:0!important;font-size:19px!important;line-height:1.12!important;font-weight:850!important;letter-spacing:-.35px!important;color:#10243a!important}
+.company-name-row .star{position:static!important;flex:0 0 auto!important;width:34px!important;height:34px!important;padding:0!important;margin:-2px -2px 0 0!important;font-size:29px!important;line-height:1!important;color:#17324d!important}
+.company-name-row .star.on{color:#ffcc36!important}
+.activity-pill{display:inline-block!important;max-width:100%!important;margin-top:7px!important;padding:5px 11px!important;border-radius:999px!important;background:#e8f2ff!important;color:#17324d!important;font-size:12px!important;line-height:1.15!important;font-weight:650!important}
+.place{margin-top:9px!important;color:#17324d!important;font-size:14px!important;line-height:1.2!important}
+.company-status{margin-top:9px!important}
+.company-status .badge{display:inline-flex!important;align-items:center!important;border-radius:999px!important;padding:6px 10px!important;font-size:12px!important;font-weight:750!important}
+.company-actions{display:grid!important;grid-template-columns:1.08fr 1fr 1fr!important;gap:7px!important;margin-top:11px!important}
+.company-actions button,.company-actions a{
+  min-width:0!important;min-height:42px!important;padding:8px!important;border-radius:11px!important;
+  border:1px solid #d5e0ea!important;background:#f8fbfe!important;color:#17324d!important;
+  font-size:12px!important;font-weight:700!important;text-align:center!important;text-decoration:none!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;white-space:nowrap!important;
+}
+.company-actions .primary{background:#146ff5!important;border-color:#146ff5!important;color:#fff!important}
+.card-action-empty{display:block!important}
+@media(max-width:699px){
+  .company-main{grid-template-columns:39% 1fr!important;gap:12px!important}
+  .company-visual-wrap{height:108px!important}
+  .company-name-row .name{font-size:17px!important}
+  .company-name-row .star{font-size:27px!important;width:30px!important;height:30px!important}
+  .activity-pill{font-size:11px!important;padding:5px 9px!important}
+  .place{font-size:13px!important;margin-top:8px!important}
+  .company-actions{gap:6px!important}
+  .company-actions button,.company-actions a{font-size:11px!important;min-height:40px!important;padding:7px 5px!important}
+}
+@media(max-width:390px){
+  .company-main{grid-template-columns:37% 1fr!important;gap:10px!important}
+  .company-visual-wrap{height:96px!important}
+  .company-name-row .name{font-size:16px!important}
+  .company-actions button,.company-actions a{font-size:10px!important}
+}
+@media(min-width:700px){
+  .company-card{padding:14px!important}
+  .company-main{grid-template-columns:270px 1fr!important;gap:18px!important}
+  .company-visual-wrap{height:128px!important}
+  .company-name-row .name{font-size:21px!important}
+  .activity-pill{font-size:13px!important}
+  .place{font-size:15px!important}
+  .company-actions{gap:9px!important}
+  .company-actions button,.company-actions a{font-size:13px!important;min-height:44px!important}
+}
+
 </style>
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=6-4">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=6-4">
@@ -469,8 +526,12 @@ let a=companies.filter(c=>(!q||[c.name,c.activity,c.address,c.city,c.sector,c.po
 let k=$("sort").value;a.sort((x,y)=>String((k==="name"?x.name:k==="city"?x.city:x.activity)||"").localeCompare(String((k==="name"?y.name:k==="city"?y.city:y.activity)||""),"fr"));return a}
 function render(){
 let a=filtered();$("count").textContent=`${a.length} entreprise${a.length>1?"s":""}`;$("searchCount").textContent=`${a.length} entreprise${a.length>1?"s":""}`;
-$("cards").innerHTML=a.length?a.map(c=>{let f=(follow[c.id]&&follow[c.id].active===true)?follow[c.id]:null, st=f?statusLabel(f.status):"";
-return `<article class="card"><div class="top"><div class="identity">${logo(c)}<div><div class="name">${esc(c.name)}</div><div class="activity">${esc(c.activity)}</div><div class="place">📍 ${esc(c.city||c.sector)} ${esc(c.postal)}</div>${c.sector?`<div class="sector-line">${esc(c.sector)}</div>`:""}${c.origin==="Ajoutée par l'élève"?`<div class="new-origin origin-new">✏️ Ajoutée par toi</div>`:""}${f?`<div class="small" style="margin-top:6px"><span class="badge ${statusClass(f.status)}">${st}</span></div>`:""}</div></div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div><div class="card-actions"><button class="primary" onclick="openDetail('${esc(c.id)}')">Voir la fiche</button><button onclick="openFollow('${esc(c.id)}')">${f?"📋 Ma recherche":"➕ Ajouter à ma recherche"}</button>${c.email?`<a href="mailto:${esc(c.email)}">✉️ E-mail</a>`:c.phone?`<a href="tel:${esc(c.phone)}">📞 Appeler</a>`:""}</div></article>`}).join(""):'<div class="empty">Aucune entreprise ne correspond.</div>'}
+$("cards").innerHTML=a.length?a.map(c=>{
+let f=(follow[c.id]&&follow[c.id].active===true)?follow[c.id]:null, st=f?statusLabel(f.status):"";
+let visual=c.logo?`<img class="company-visual" src="${esc(c.logo)}" alt="" loading="lazy" onerror="this.style.display='none'">`:`<div class="company-visual company-visual-empty"><span>🏢</span></div>`;
+let followAction=f?"📋 Ma recherche":"＋ Ajouter à ma recherche";
+let callAction=c.phone?`<a href="tel:${esc(c.phone)}" class="card-call">☎️ Appeler</a>`:`<span class="card-action-empty"></span>`;
+return `<article class="card company-card"><div class="company-main"><div class="company-visual-wrap">${visual}</div><div class="company-info"><div class="company-name-row"><div class="name">${esc(c.name)}</div><button class="star ${isFav(c.id)?"on":""}" onclick="toggleFav('${esc(c.id)}')">${isFav(c.id)?"★":"☆"}</button></div>${c.activity?`<div class="activity-pill">${esc(c.activity)}</div>`:""}${c.city||c.postal?`<div class="place">📍 ${esc(c.city)} ${esc(c.postal)}</div>`:""}${c.origin==="Ajoutée par l'élève"?`<div class="new-origin origin-new">✏️ Ajoutée par toi</div>`:""}${f?`<div class="small company-status"><span class="badge ${statusClass(f.status)}">${st}</span></div>`:""}</div></div><div class="card-actions company-actions"><button class="primary" onclick="openDetail('${esc(c.id)}')">▣&nbsp; Voir la fiche</button><button onclick="openFollow('${esc(c.id)}')">${followAction}</button>${callAction}</div></article>`}).join(""):'<div class="empty">Aucune entreprise ne correspond.</div>'}
 function openDetail(id){let c=companies.find(x=>x.id===id);if(!c)return;show("detailView");
 let maps=c.lat!=null&&c.lon!=null?`https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lon}`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((c.address||"")+" "+(c.city||""))}`;
 let web=c.website?`<a target="_blank" rel="noopener" href="${esc(/^https?:\/\//i.test(c.website)?c.website:"https://"+c.website)}">🌐 Site internet</a>`:"";
