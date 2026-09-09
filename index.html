@@ -287,6 +287,34 @@ main{padding-top:0!important}
   .hero-logo{width:94px!important;height:94px!important;right:54px!important;top:30px!important}
 }
 
+
+/* V6.7 — corrections élèves */
+.kpi b,.kpi span{color:#fff!important}
+.screen-head h2{display:flex!important;align-items:center!important;gap:8px!important}
+.screen-head h2 svg{
+  width:30px!important;height:30px!important;
+  max-width:30px!important;max-height:30px!important;
+  display:inline-block!important;vertical-align:middle!important;
+}
+.follow-intro{
+  display:flex!important;align-items:center!important;
+  justify-content:space-between!important;gap:16px!important;
+  padding:15px 18px!important;
+}
+.follow-intro-text{
+  font-size:20px!important;line-height:1.2!important;
+  font-weight:800!important;color:#fff!important;margin:0!important;
+}
+@media(max-width:699px){
+  .follow-intro{padding:14px 15px!important;gap:10px!important}
+  .follow-intro-text{font-size:16px!important;line-height:1.18!important}
+  .follow-intro .btn{white-space:nowrap!important;padding:10px 11px!important;font-size:12px!important}
+}
+@media(max-width:430px){
+  .follow-intro-text{font-size:14px!important}
+  .follow-intro .btn{font-size:11px!important;padding:9px 10px!important}
+}
+
 </style>
 <link rel="apple-touch-icon" href="apple-touch-icon.png?v=6-4">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=6-4">
@@ -353,7 +381,7 @@ nav button{color:#91a5b8}nav button.nav-active{color:#4b96ff}
 </div>
 <div class="search-panel"><div class="search-title"><span>⌕</span><strong>Rechercher une entreprise</strong><span class="search-count" id="searchCount">257 entreprises</span></div>
 <div class="search"><input id="q" placeholder="Nom, activité, ville, code postal…" autocomplete="off"></div>
-<div class="filters"><select id="sector"><option value="">📍 Tous les secteurs géographiques</option></select><select id="city"><option value="">🏙️ Toutes les villes</option></select><select id="activity"><option value="">💼 Toutes les activités</option></select></div></div>
+<div class="filters"><select id="sector"><option value="">📍 Tous les secteurs géographiques</option></select><select id="activity"><option value="">💼 Toutes les activités</option></select></div></div>
 <div class="tools"><button class="pill" id="favOnly">☆ Favoris uniquement</button><select id="sort" style="max-width:220px"><option value="name">Trier par nom</option><option value="city">Trier par ville</option><option value="activity">Trier par secteur</option></select></div>
 <div class="status"><span id="count">Chargement…</span><button class="pill" id="reset">Réinitialiser</button></div>
 <div id="cards" class="grid"><div class="loading">Chargement…</div></div>
@@ -371,7 +399,7 @@ nav button{color:#91a5b8}nav button.nav-active{color:#4b96ff}
 </div>
 <div class="form-actions"><button class="btn primary" id="saveProfile">💾 Enregistrer mon profil</button><button class="btn primary" id="sendTeacher">✉️ Envoyer mes recherches à l’enseignant</button><button class="btn" id="exportXlsx">📊 Télécharger Excel</button></div><p class="muted small" style="margin:8px 0 0">Un clic prépare un e-mail avec l’ensemble de tes démarches. Le fichier Excel reste disponible à côté.</p>
 </div>
-<div class="summary-card" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><div><h2 style="margin:0">📊 MES DÉMARCHES DE PFMP</h2><p class="muted small" style="margin:5px 0 0">J'ai démarché une entreprise qui n'est pas dans l'application</p></div><button class="btn primary" onclick="openNewCompanyModal()">＋ Ajouter une entreprise</button></div><div class="summary-card"><h2 style="margin-top:0">📈 Mon bilan</h2><div class="kpis" id="kpis"></div></div>
+<div class="summary-card follow-intro"><p class="follow-intro-text">J'ai démarché une entreprise qui n'est pas dans l'application</p><button class="btn primary" onclick="openNewCompanyModal()">＋ Ajouter une entreprise</button></div><div class="summary-card"><h2 style="margin-top:0">📈 Mon bilan</h2><div class="kpis" id="kpis"></div></div>
 <div class="summary-card"><div id="followList"></div></div>
 <div class="summary-card" style="text-align:center;margin-bottom:30px">
 <button class="btn danger" onclick="resetAllFollow()">🗑️ Réinitialiser ma recherche</button>
@@ -428,15 +456,16 @@ cell+=ch}
 if(cell!==""||row.length){row.push(cell);if(row.some(v=>v.trim()))rows.push(row)}
 let h=(rows.shift()||[]).map(x=>x.trim());return rows.map(r=>{let o={};h.forEach((x,i)=>o[x]=(r[i]||"").trim());return o})
 }
+function normalizeSector(s){return String(s||"").trim().replace(/[–—-]+/g," ").replace(/\s+/g," ").trim()}
 function adapt(r){let m=String(r.Coordinates||"").match(/^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$/);
-return{id:r.ID,name:r["Raison Sociale"],activity:r["Activité"],address:r.Adresse,city:r["Localisation"],sector:r["Secteur géographique"],postal:r["CODE POSTAL"],responsible:r["Responsable de l'entreprise"],phone:r["Téléphone entreprise"],email:r.Mail,website:r["Site internet de l'entreprise"],logo:r.Logo,lat:m?+m[1]:null,lon:m?+m[2]:null,origin:"Base officielle"}}
+return{id:r.ID,name:r["Raison Sociale"],activity:r["Activité"],address:r.Adresse,city:r["Localisation"],sector:normalizeSector(r["Secteur géographique"]),postal:r["CODE POSTAL"],responsible:r["Responsable de l'entreprise"],phone:r["Téléphone entreprise"],email:r.Mail,website:r["Site internet de l'entreprise"],logo:r.Logo,lat:m?+m[1]:null,lon:m?+m[2]:null,origin:"Base officielle"}}
 function normalizeCustom(c){return {id:c.id,name:c.name,activity:c.activity||"",address:c.address||"",city:c.city||"",postal:c.postal||"",responsible:c.responsible||"",phone:c.phone||"",email:c.email||"",website:c.website||"",logo:"",lat:null,lon:null,sector:c.sector||"",origin:"Ajoutée par l'élève"}} function statusLabel(s){return({todo:"⚪ À contacter",ongoing:"🟡 Démarche en cours",rdv:"🔵 RDV prévu",won:"🟢 Stage obtenu",refused:"🔴 Refus",closed:"⚫ Entreprise fermée",abandoned:"⚫ Abandonnée"})[s]||"⚪ À contacter"}
 function statusClass(s){return s==="won"?"green":(s==="refused"||s==="closed")?"red":s==="rdv"?"blue":""}
 function getFollow(id){if(!follow[id])follow[id]={active:true,status:"todo",refusalReason:"",events:[]};return follow[id]}
 function logo(c){return c.logo?`<img class="logo" src="${esc(c.logo)}" alt="" loading="lazy" onerror="this.style.display='none'">`:""}
 function filtered(){
-let q=$("q").value.trim().toLowerCase(),ci=$("city").value,se=$("sector").value,ac=$("activity").value;
-let a=companies.filter(c=>(!q||[c.name,c.activity,c.address,c.city,c.sector,c.postal].join(" ").toLowerCase().includes(q))&&(!ci||c.city===ci)&&(!se||c.sector===se)&&(!ac||c.activity===ac)&&(!favMode||isFav(c.id)));
+let q=$("q").value.trim().toLowerCase(),se=$("sector").value,ac=$("activity").value;
+let a=companies.filter(c=>(!q||[c.name,c.activity,c.address,c.city,c.sector,c.postal].join(" ").toLowerCase().includes(q))&&(!se||c.sector===se)&&(!ac||c.activity===ac)&&(!favMode||isFav(c.id)));
 let k=$("sort").value;a.sort((x,y)=>String((k==="name"?x.name:k==="city"?x.city:x.activity)||"").localeCompare(String((k==="name"?y.name:k==="city"?y.city:y.activity)||""),"fr"));return a}
 function render(){
 let a=filtered();$("count").textContent=`${a.length} entreprise${a.length>1?"s":""}`;$("searchCount").textContent=`${a.length} entreprise${a.length>1?"s":""}`;
@@ -608,7 +637,6 @@ async function load(){
 cleanupAutoCreatedFollow();
 try{let r=await fetch("data/entreprises.csv?"+Date.now(),{cache:"no-store"});if(!r.ok)throw new Error("CSV "+r.status);companies=parseCSV(await r.text()).map(adapt).filter(c=>c.id&&c.name); companies=[...companies,...customCompanies.map(normalizeCustom)];
 [...new Set(companies.map(c=>c.sector).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr")).forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent="📍 "+x;$("sector").appendChild(o)});
-[...new Set(companies.map(c=>c.city).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr")).forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent="🏙️ "+x;$("city").appendChild(o)});
 [...new Set(companies.map(c=>c.activity).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"fr")).forEach(x=>{let o=document.createElement("option");o.value=x;o.textContent="🏢 "+x;$("activity").appendChild(o)});
 render()}catch(e){$("count").textContent="Erreur de chargement";$("cards").innerHTML='<div class="empty">Impossible de charger la base. Vérifie que data/entreprises.csv est bien présent.</div>'}}
 $("homeBtn").onclick=()=>{favMode=false;$("favOnly").classList.remove("active");show("companiesView");render()};
@@ -617,8 +645,8 @@ $("followBtn").onclick=()=>show("followView");
 $("favoritesBtn").onclick=()=>{favMode=true;$("favOnly").classList.add("active");show("companiesView");render()};
 $("back").onclick=()=>show("companiesView");$("backFollow").onclick=()=>show("followView");
 $("favOnly").onclick=()=>{favMode=!favMode;$("favOnly").classList.toggle("active",favMode);$("favOnly").textContent=favMode?"★ Tous les résultats":"☆ Favoris uniquement";render()};
-$("reset").onclick=()=>{$("q").value="";$("city").value="";$("sector").value="";$("activity").value="";$("sort").value="name";favMode=false;$("favOnly").classList.remove("active");$("favOnly").textContent="☆ Favoris uniquement";render()};
-["q","city","sector","activity","sort"].forEach(id=>$(id).addEventListener("input",()=>{render();if(map)renderMap()}));
+$("reset").onclick=()=>{$("q").value="";$("sector").value="";$("activity").value="";$("sort").value="name";favMode=false;$("favOnly").classList.remove("active");$("favOnly").textContent="☆ Favoris uniquement";render()};
+["q","sector","activity","sort"].forEach(id=>$(id).addEventListener("input",()=>{render();if(map)renderMap()}));
 $("locate").onclick=locate;$("mapAll").onclick=()=>{if(map){let b=companies.filter(c=>c.lat!=null).map(c=>[c.lat,c.lon]);if(b.length)map.fitBounds(b,{padding:[25,25],maxZoom:12})}};
 $("saveProfile").onclick=saveProfile;$("sendTeacher").onclick=sendTeacher;$("exportXlsx").onclick=exportXlsx;
 $("modalBg").addEventListener("click",e=>{if(e.target===$("modalBg"))closeModal()});
